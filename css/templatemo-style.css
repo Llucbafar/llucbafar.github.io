@@ -110,12 +110,15 @@ a:hover {
 }
 
 .tm-brand-container-outer {
-  margin-top: -750px;
+    margin-top: -750px;
+    width: 85%;
+    margin-left: auto;
 }
 
 .tm-brand-container-inner {
-  max-width: 750px;
-  width: 100%;
+    max-width: 750px;
+    width: 75%;
+    margin-left: auto;
 }
 
 .tm-brand-container {
@@ -132,7 +135,7 @@ a:hover {
 
 .parallax-window {
     min-height: 600px;
-    background: #fefae0;
+    background: transparent;
 }
 
 #tmContact {
@@ -140,13 +143,10 @@ a:hover {
 }
 
 .tm-welcome-container {
-  min-height: 750;
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  display: flex;
-  align-items: stretch;
+    max-width: 1000px;
+    width: 100%;
+    margin-left: auto;
+    margin-right: 75px;
 }
 
 .tm-welcome-title {
@@ -284,9 +284,13 @@ p {
 }
 
 .tm-contact-items-container {
-  display: flex;
-  justify-content:normal;
-  margin-bottom: 50px;
+    display: flex;
+    justify-content: left;
+    margin-bottom: 50px;
+
+    width: 75%;
+    margin-left: -15%;
+    margin-right: auto;
 }
 
 .tm-contact-item-icon {
