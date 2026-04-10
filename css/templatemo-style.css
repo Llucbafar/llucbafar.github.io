@@ -1,10 +1,5 @@
 /**
 
-Mini Profile Template
-
-https://templatemo.com/tm-530-mini-profile
-
-
 Color Codes
 ------------
 brown: #986665;
@@ -14,6 +9,14 @@ blue: #3398cc;
 dark-gray: #676767;
 light-gray: #999999;
 text-gray: #6b6b6b;
+
+
+paleta nueva
+    oliva: #606c38
+    militar oscuro: #283618
+    beige: #fefae0
+    naranja crema : #dda15e
+    naranja oscuro: #bc6c25
 
 */
 
@@ -75,6 +78,28 @@ a:hover {
   background-color: #cccf02;
 }
 
+.tm-bg-oliva{
+  background-color: #606c38;
+}
+.tm-bg-militar-oscuro{
+  background-color: #283618;
+}
+.tm-bg-beige{
+  background-color: #fefae0;
+}
+.tm-bg-beige-claro{
+  background-color: #EDEBDA;
+}
+.tm-bg-naranja-crema{
+  background-color: #dda15e;
+}
+.tm-bg-naranja-oscuro{
+  background-color: #bc6c25;
+}
+.tm-bg-turquesa {
+  background-color: #155249;
+}
+
 /*
   Welcome section
 */
@@ -85,11 +110,11 @@ a:hover {
 }
 
 .tm-brand-container-outer {
-  margin-top: -400px;
+  margin-top: -750px;
 }
 
 .tm-brand-container-inner {
-  max-width: 580px;
+  max-width: 750px;
   width: 100%;
 }
 
@@ -106,8 +131,8 @@ a:hover {
 }
 
 .parallax-window {
-  min-height: 1100px;
-  background: transparent;
+    min-height: 600px;
+    background: #fefae0;
 }
 
 #tmContact {
@@ -115,7 +140,7 @@ a:hover {
 }
 
 .tm-welcome-container {
-  min-height: 400px;
+  min-height: 750;
   position: absolute;
   bottom: 0;
   left: 0;
@@ -140,10 +165,10 @@ a:hover {
 }
 
 .tm-welcome-right {
-  color: white;
-  background-color: #166126;
-  padding: 80px 43px 70px;
-  height: 100%;
+    color: white;
+    background-color: #dda15e;
+    padding: 80px 43px 70px;
+    height: 100%;
 }
 
 .tm-welcome-icon {
@@ -209,8 +234,27 @@ a:hover {
   color: #cccf02;
 }
 
+.tm-text-oliva{
+  color: #606c38;
+}
+.tm-text-militar-oscuro{
+  color: #283618;
+}
+.tm-text-beige{
+  color: #fefae0;
+}
+.tm-text-naranja-crema{
+  color: #dda15e;
+}
+.tm-text-naranja-oscuro{
+  color: #bc6c25;
+}
+.tm-text-turquesa {
+    color: #155249;
+}
+
 .tm-title-small {
-  font-size: 1.3rem;
+    font-size: 1.3rem;
 }
 
 p {
@@ -241,8 +285,8 @@ p {
 
 .tm-contact-items-container {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 130px;
+  justify-content:normal;
+  margin-bottom: 50px;
 }
 
 .tm-contact-item-icon {
@@ -292,13 +336,13 @@ p {
   color: #676767;
 }
 
-@media (max-width: 1054px) {
+@media (max-width: 200px) {
   .tm-contact-item-icon {
     margin-bottom: 15px;
   }
 }
 
-@media (max-width: 991px) {
+@media (max-width: 200px) {
   .tm-contact-items-container {
     flex-direction: column;
   }
@@ -348,7 +392,7 @@ p {
   }
 }
 
-@media (max-width: 443px) {
+@media (max-width: 750px) {
   .tm-brand-name {
     font-size: 3rem;
   }
