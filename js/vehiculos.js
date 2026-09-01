@@ -33,6 +33,12 @@ const VEHICLES = {
         color: "dark-green",
         colorClass: "reservation-laguna"
     }
+
+const REAL_VEHICLES = [
+    "C3",
+    "C4",
+    "Laguna"
+];
 };
 
 const STORAGE_KEY = "llucbafar_vehicle_reservations";
@@ -102,6 +108,15 @@ const reservationForm =
 
 const formError =
     document.getElementById("formError");
+
+const allDay =
+    document.getElementById("allDay");
+
+const startTimeInput =
+    document.getElementById("startTime");
+
+const endTimeInput =
+    document.getElementById("endTime");
 
 const deleteModal =
     document.getElementById("deleteModal");
@@ -398,6 +413,43 @@ function renderReservations() {
 
         }
     );
+
+allDay.addEventListener(
+    "change",
+    () => {
+
+        if (allDay.checked) {
+
+            startTimeInput.value =
+                "00:00";
+
+            endTimeInput.value =
+                "23:59";
+
+            startTimeInput.disabled =
+                true;
+
+            endTimeInput.disabled =
+                true;
+
+        } else {
+
+            startTimeInput.disabled =
+                false;
+
+            endTimeInput.disabled =
+                false;
+
+            startTimeInput.value =
+                "";
+
+            endTimeInput.value =
+                "";
+
+        }
+
+    }
+);
 
 }
 
