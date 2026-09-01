@@ -202,21 +202,114 @@ button {
     color: white;
 }
 
-.calendar-day.has-reservations::after {
+/* ---------------------------------------------------------
+   PUNTOS DE VEHÍCULOS RESERVADOS
+   --------------------------------------------------------- */
+
+.calendar-day.reserved-c3::after,
+.calendar-day.reserved-c4::after,
+.calendar-day.reserved-laguna::after {
+
     content: "";
 
     position: absolute;
+
     bottom: 5px;
 
     width: 5px;
     height: 5px;
 
     border-radius: 50%;
-    background: var(--text);
 }
 
-.calendar-day.selected.has-reservations::after {
-    background: white;
+
+/* ---------------------------------------------------------
+   UN SOLO COCHE
+   --------------------------------------------------------- */
+
+.calendar-day.reserved-c3::after {
+
+    background: var(--c3);
+
+}
+
+
+.calendar-day.reserved-c4::after {
+
+    background: var(--c4);
+
+}
+
+
+.calendar-day.reserved-laguna::after {
+
+    background: var(--laguna);
+
+}
+
+
+/* ---------------------------------------------------------
+   DOS COCHES
+   --------------------------------------------------------- */
+
+.calendar-day.reserved-c3.reserved-c4::after {
+
+    background:
+        linear-gradient(
+            to right,
+            var(--c3) 0 50%,
+            var(--c4) 50% 100%
+        );
+
+    width: 13px;
+
+}
+
+
+.calendar-day.reserved-c3.reserved-laguna::after {
+
+    background:
+        linear-gradient(
+            to right,
+            var(--c3) 0 50%,
+            var(--laguna) 50% 100%
+        );
+
+    width: 13px;
+
+}
+
+
+.calendar-day.reserved-c4.reserved-laguna::after {
+
+    background:
+        linear-gradient(
+            to right,
+            var(--c4) 0 50%,
+            var(--laguna) 50% 100%
+        );
+
+    width: 13px;
+
+}
+
+
+/* ---------------------------------------------------------
+   TRES COCHES
+   --------------------------------------------------------- */
+
+.calendar-day.reserved-c3.reserved-c4.reserved-laguna::after {
+
+    background:
+        linear-gradient(
+            to right,
+            var(--c3) 0 33.33%,
+            var(--c4) 33.33% 66.66%,
+            var(--laguna) 66.66% 100%
+        );
+
+    width: 19px;
+
 }
 
 .today-button {
