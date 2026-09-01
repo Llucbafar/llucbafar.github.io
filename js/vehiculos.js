@@ -213,14 +213,33 @@ function renderCalendar() {
         }
 
 
-        // Tiene reservas
-        if (hasReservations(dateString)) {
+        // Vehículos reservados ese día
+const reservedVehicles =
+    getReservedVehicles(dateString);
 
+reservedVehicles.forEach(
+    vehicle => {
+
+        if (vehicle === "C3") {
             button.classList.add(
-                "has-reservations"
+                "reserved-c3"
             );
-
         }
+
+        if (vehicle === "C4") {
+            button.classList.add(
+                "reserved-c4"
+            );
+        }
+
+        if (vehicle === "Laguna") {
+            button.classList.add(
+                "reserved-laguna"
+            );
+        }
+
+    }
+);
 
 
         button.addEventListener(
@@ -832,13 +851,22 @@ function parseDate(dateString) {
 }
 
 
-function hasReservations(dateString) {
+function getReservedVehicles(dateString) {
 
-    return reservations.some(
-        reservation =>
-            reservation.date ===
-            dateString
-    );
+    return [
+        ...new Set(
+            reservations
+                .filter(
+                    reservation =>
+                        reservation.date ===
+                        dateString
+                )
+                .map(
+                    reservation =>
+                        reservation.vehicle
+                )
+        )
+    ];
 
 }
 
