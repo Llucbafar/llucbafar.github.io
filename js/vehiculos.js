@@ -3,9 +3,9 @@
    ========================================================= */
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    CONFIGURACIÓN
-   --------------------------------------------------------- */
+   ========================================================= */
 
 const PEOPLE = [
     "Cristina",
@@ -15,34 +15,37 @@ const PEOPLE = [
     "Mar"
 ];
 
+
 const VEHICLES = {
+
     C3: {
         name: "C3",
-        color: "blue",
         colorClass: "reservation-c3"
     },
 
     C4: {
         name: "C4",
-        color: "grey",
         colorClass: "reservation-c4"
     },
 
     Laguna: {
         name: "Laguna",
-        color: "dark-green",
         colorClass: "reservation-laguna"
     }
+
 };
 
-const STORAGE_KEY = "llucbafar_vehicle_reservations";
+
+const STORAGE_KEY =
+    "llucbafar_vehicle_reservations";
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    ESTADO
-   --------------------------------------------------------- */
+   ========================================================= */
 
 const today = new Date();
+
 
 let currentMonth = new Date(
     today.getFullYear(),
@@ -50,110 +53,338 @@ let currentMonth = new Date(
     1
 );
 
-let selectedDate = formatDate(today);
 
-let reservations = loadReservations();
-
-let reservationToDelete = null;
+let selectedDate =
+    formatDate(today);
 
 
-/* ---------------------------------------------------------
-   ELEMENTOS DOM
-   --------------------------------------------------------- */
+let reservations =
+    loadReservations();
+
+
+let reservationToDelete =
+    null;
+
+
+/* =========================================================
+   DOM
+   ========================================================= */
 
 const monthTitle =
-    document.getElementById("monthTitle");
+    document.getElementById(
+        "monthTitle"
+    );
+
 
 const calendar =
-    document.getElementById("calendar");
+    document.getElementById(
+        "calendar"
+    );
+
 
 const selectedDateTitle =
-    document.getElementById("selectedDateTitle");
+    document.getElementById(
+        "selectedDateTitle"
+    );
+
 
 const reservationsList =
-    document.getElementById("reservationsList");
+    document.getElementById(
+        "reservationsList"
+    );
+
 
 const previousMonthButton =
-    document.getElementById("previousMonth");
+    document.getElementById(
+        "previousMonth"
+    );
+
 
 const nextMonthButton =
-    document.getElementById("nextMonth");
+    document.getElementById(
+        "nextMonth"
+    );
+
 
 const todayButton =
-    document.getElementById("todayButton");
+    document.getElementById(
+        "todayButton"
+    );
+
 
 const addReservationButton =
-    document.getElementById("addReservationButton");
+    document.getElementById(
+        "addReservationButton"
+    );
+
 
 const reservationModal =
-    document.getElementById("reservationModal");
+    document.getElementById(
+        "reservationModal"
+    );
+
 
 const closeModalButton =
-    document.getElementById("closeModalButton");
+    document.getElementById(
+        "closeModalButton"
+    );
+
 
 const modalOverlay =
-    document.getElementById("modalOverlay");
+    document.getElementById(
+        "modalOverlay"
+    );
+
 
 const modalDateTitle =
-    document.getElementById("modalDateTitle");
+    document.getElementById(
+        "modalDateTitle"
+    );
+
 
 const reservationForm =
-    document.getElementById("reservationForm");
+    document.getElementById(
+        "reservationForm"
+    );
+
 
 const formError =
-    document.getElementById("formError");
+    document.getElementById(
+        "formError"
+    );
+
+
+const recurringSection =
+    document.getElementById(
+        "recurringSection"
+    );
+
+
+const recurringList =
+    document.getElementById(
+        "recurringList"
+    );
+
+
+const multipleDaysSection =
+    document.getElementById(
+        "multipleDaysSection"
+    );
+
+
+const bookingPreview =
+    document.getElementById(
+        "bookingPreview"
+    );
+
 
 const deleteModal =
-    document.getElementById("deleteModal");
+    document.getElementById(
+        "deleteModal"
+    );
+
 
 const cancelDelete =
-    document.getElementById("cancelDelete");
+    document.getElementById(
+        "cancelDelete"
+    );
+
 
 const confirmDelete =
-    document.getElementById("confirmDelete");
+    document.getElementById(
+        "confirmDelete"
+    );
 
 
-/* ---------------------------------------------------------
+/* =========================================================
    INICIO
-   --------------------------------------------------------- */
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
 
-    renderCalendar();
-    renderSelectedDay();
+        renderCalendar();
 
-});
+        renderSelectedDay();
+
+        setupEventListeners();
+
+    }
+);
 
 
-/* ---------------------------------------------------------
+/* =========================================================
+   EVENTOS
+   ========================================================= */
+
+function setupEventListeners() {
+
+
+    previousMonthButton.addEventListener(
+        "click",
+        previousMonth
+    );
+
+
+    nextMonthButton.addEventListener(
+        "click",
+        nextMonth
+    );
+
+
+    todayButton.addEventListener(
+        "click",
+        goToToday
+    );
+
+
+    addReservationButton.addEventListener(
+        "click",
+        openReservationModal
+    );
+
+
+    closeModalButton.addEventListener(
+        "click",
+        closeReservationModal
+    );
+
+
+    modalOverlay.addEventListener(
+        "click",
+        closeReservationModal
+    );
+
+
+    reservationForm.addEventListener(
+        "submit",
+        createReservations
+    );
+
+
+    document
+        .getElementById("person")
+        .addEventListener(
+            "change",
+            updateRecurringSchedules
+        );
+
+
+    document
+        .querySelectorAll(
+            'input[name="repeatType"]'
+        )
+        .forEach(
+            input => {
+
+                input.addEventListener(
+                    "change",
+                    updateRepeatInterface
+                );
+
+            }
+        );
+
+
+    document
+        .querySelectorAll(
+            "#reservationForm input, #reservationForm select"
+        )
+        .forEach(
+            input => {
+
+                input.addEventListener(
+                    "change",
+                    updateBookingPreview
+                );
+
+                input.addEventListener(
+                    "input",
+                    updateBookingPreview
+                );
+
+            }
+        );
+
+
+    cancelDelete.addEventListener(
+        "click",
+        closeDeleteModal
+    );
+
+
+    confirmDelete.addEventListener(
+        "click",
+        deleteReservation
+    );
+
+
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (event.key === "Escape") {
+
+                closeReservationModal();
+
+                closeDeleteModal();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
    CALENDARIO
-   --------------------------------------------------------- */
+   ========================================================= */
 
 function renderCalendar() {
 
     calendar.innerHTML = "";
 
-    const year = currentMonth.getFullYear();
-    const month = currentMonth.getMonth();
 
-    const monthName = currentMonth.toLocaleDateString(
-        "es-ES",
-        {
-            month: "long",
-            year: "numeric"
-        }
-    );
-
-    monthTitle.textContent = capitalize(monthName);
+    const year =
+        currentMonth.getFullYear();
 
 
-    const firstDay = new Date(year, month, 1);
+    const month =
+        currentMonth.getMonth();
+
+
+    const monthName =
+        currentMonth.toLocaleDateString(
+            "es-ES",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        );
+
+
+    monthTitle.textContent =
+        capitalize(monthName);
+
+
+    const firstDay =
+        new Date(
+            year,
+            month,
+            1
+        );
+
+
+    let startingDay =
+        firstDay.getDay();
+
 
     /*
-     * JavaScript empieza la semana en domingo.
-     * Lo convertimos para que lunes sea 0.
+     * Convertimos domingo = 0
+     * a lunes = 0.
      */
-    let startingDay = firstDay.getDay();
 
     startingDay =
         startingDay === 0
@@ -162,59 +393,97 @@ function renderCalendar() {
 
 
     const daysInMonth =
-        new Date(year, month + 1, 0).getDate();
+        new Date(
+            year,
+            month + 1,
+            0
+        ).getDate();
 
 
-    // Espacios antes del primer día
-    for (let i = 0; i < startingDay; i++) {
+    for (
+        let i = 0;
+        i < startingDay;
+        i++
+    ) {
 
         const emptyDay =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         emptyDay.className =
             "calendar-day empty";
 
-        calendar.appendChild(emptyDay);
+
+        calendar.appendChild(
+            emptyDay
+        );
+
     }
 
 
-    // Días del mes
-    for (let day = 1; day <= daysInMonth; day++) {
+    for (
+        let day = 1;
+        day <= daysInMonth;
+        day++
+    ) {
 
         const date =
-            new Date(year, month, day);
+            new Date(
+                year,
+                month,
+                day
+            );
+
 
         const dateString =
             formatDate(date);
 
+
         const button =
-            document.createElement("button");
+            document.createElement(
+                "button"
+            );
+
 
         button.className =
             "calendar-day";
+
 
         button.textContent =
             day;
 
 
-        // Hoy
-        if (dateString === formatDate(today)) {
+        if (
+            dateString ===
+            formatDate(today)
+        ) {
 
-            button.classList.add("today");
-
-        }
-
-
-        // Día seleccionado
-        if (dateString === selectedDate) {
-
-            button.classList.add("selected");
+            button.classList.add(
+                "today"
+            );
 
         }
 
 
-        // Tiene reservas
-        if (hasReservations(dateString)) {
+        if (
+            dateString ===
+            selectedDate
+        ) {
+
+            button.classList.add(
+                "selected"
+            );
+
+        }
+
+
+        if (
+            hasReservations(
+                dateString
+            )
+        ) {
 
             button.classList.add(
                 "has-reservations"
@@ -227,29 +496,37 @@ function renderCalendar() {
             "click",
             () => {
 
-                selectedDate = dateString;
+                selectedDate =
+                    dateString;
 
                 renderCalendar();
+
                 renderSelectedDay();
 
             }
         );
 
 
-        calendar.appendChild(button);
+        calendar.appendChild(
+            button
+        );
+
     }
 
 }
 
 
-/* ---------------------------------------------------------
-   DÍA SELECCIONADO
-   --------------------------------------------------------- */
+/* =========================================================
+   DÍA
+   ========================================================= */
 
 function renderSelectedDay() {
 
     const date =
-        parseDate(selectedDate);
+        parseDate(
+            selectedDate
+        );
+
 
     selectedDateTitle.textContent =
         date.toLocaleDateString(
@@ -261,24 +538,28 @@ function renderSelectedDay() {
             }
         );
 
+
     renderReservations();
 
 }
 
 
-/* ---------------------------------------------------------
-   RESERVAS
-   --------------------------------------------------------- */
+/* =========================================================
+   RESERVAS DEL DÍA
+   ========================================================= */
 
 function renderReservations() {
 
-    reservationsList.innerHTML = "";
+    reservationsList.innerHTML =
+        "";
+
 
     const dayReservations =
         reservations
             .filter(
                 reservation =>
-                    reservation.date === selectedDate
+                    reservation.date ===
+                    selectedDate
             )
             .sort(
                 (a, b) =>
@@ -288,22 +569,35 @@ function renderReservations() {
             );
 
 
-    if (dayReservations.length === 0) {
+    if (
+        dayReservations.length === 0
+    ) {
 
         const empty =
-            document.createElement("div");
+            document.createElement(
+                "div"
+            );
+
 
         empty.className =
             "empty-message";
 
-        empty.innerHTML = `
-            No hay reservas para este día.<br>
-            Pulsa <strong>+</strong> para reservar un vehículo.
-        `;
 
-        reservationsList.appendChild(empty);
+        empty.innerHTML =
+            `
+            No hay reservas para este día.<br>
+            Pulsa <strong>+</strong>
+            para reservar un vehículo.
+            `;
+
+
+        reservationsList.appendChild(
+            empty
+        );
+
 
         return;
+
     }
 
 
@@ -311,38 +605,49 @@ function renderReservations() {
         reservation => {
 
             const vehicle =
-                VEHICLES[reservation.vehicle];
+                VEHICLES[
+                    reservation.vehicle
+                ];
 
 
             const element =
-                document.createElement("div");
+                document.createElement(
+                    "div"
+                );
+
 
             element.className =
-                `reservation ${vehicle.colorClass}`;
+                `reservation
+                 ${vehicle.colorClass}`;
 
 
-            element.innerHTML = `
+            element.innerHTML =
+                `
 
                 <div class="vehicle-color"></div>
 
                 <div class="reservation-content">
 
-                    <div class="reservation-top">
-
-                        <span class="reservation-vehicle">
-                            ${escapeHtml(reservation.vehicle)}
-                        </span>
-
+                    <div class="reservation-vehicle">
+                        ${escapeHtml(
+                            reservation.vehicle
+                        )}
                     </div>
 
                     <div class="reservation-person">
-                        ${escapeHtml(reservation.person)}
+                        ${escapeHtml(
+                            reservation.person
+                        )}
                     </div>
 
                     <div class="reservation-time">
-                        ${escapeHtml(reservation.startTime)}
+                        ${escapeHtml(
+                            reservation.startTime
+                        )}
                         –
-                        ${escapeHtml(reservation.endTime)}
+                        ${escapeHtml(
+                            reservation.endTime
+                        )}
                     </div>
 
                 </div>
@@ -357,25 +662,25 @@ function renderReservations() {
             `;
 
 
-            const deleteButton =
-                element.querySelector(
+            element
+                .querySelector(
                     ".delete-reservation"
+                )
+                .addEventListener(
+                    "click",
+                    () => {
+
+                        openDeleteModal(
+                            reservation.id
+                        );
+
+                    }
                 );
 
 
-            deleteButton.addEventListener(
-                "click",
-                () => {
-
-                    openDeleteModal(
-                        reservation.id
-                    );
-
-                }
+            reservationsList.appendChild(
+                element
             );
-
-
-            reservationsList.appendChild(element);
 
         }
     );
@@ -383,18 +688,28 @@ function renderReservations() {
 }
 
 
-/* ---------------------------------------------------------
-   MODAL NUEVA RESERVA
-   --------------------------------------------------------- */
+/* =========================================================
+   MODAL
+   ========================================================= */
 
 function openReservationModal() {
 
     reservationForm.reset();
 
-    formError.textContent = "";
+
+    formError.textContent =
+        "";
+
+
+    bookingPreview.classList.add(
+        "hidden"
+    );
+
 
     modalDateTitle.textContent =
-        parseDate(selectedDate).toLocaleDateString(
+        parseDate(
+            selectedDate
+        ).toLocaleDateString(
             "es-ES",
             {
                 weekday: "long",
@@ -402,6 +717,35 @@ function openReservationModal() {
                 month: "long"
             }
         );
+
+
+    /*
+     * Por defecto:
+     *
+     * Desde = día seleccionado
+     * Hasta = día seleccionado
+     */
+
+    document.getElementById(
+        "rangeStart"
+    ).value =
+        selectedDate;
+
+
+    document.getElementById(
+        "rangeEnd"
+    ).value =
+        selectedDate;
+
+
+    multipleDaysSection.classList.add(
+        "hidden"
+    );
+
+
+    recurringSection.classList.add(
+        "hidden"
+    );
 
 
     reservationModal.classList.remove(
@@ -415,11 +759,16 @@ function openReservationModal() {
 }
 
 
+/* =========================================================
+   CERRAR MODAL
+   ========================================================= */
+
 function closeReservationModal() {
 
     reservationModal.classList.add(
         "hidden"
     );
+
 
     document.body.style.overflow =
         "";
@@ -427,36 +776,290 @@ function closeReservationModal() {
 }
 
 
-/* ---------------------------------------------------------
-   CREAR RESERVA
-   --------------------------------------------------------- */
+/* =========================================================
+   HORARIOS RECURRENTES
+   ========================================================= */
 
-function createReservation(event) {
-
-    event.preventDefault();
-
-    formError.textContent = "";
-
+function updateRecurringSchedules() {
 
     const person =
-        document.getElementById("person").value;
+        document.getElementById(
+            "person"
+        ).value;
 
-    const vehicleElement =
-        document.querySelector(
-            'input[name="vehicle"]:checked'
+
+    recurringList.innerHTML =
+        "";
+
+
+    if (!person) {
+
+        recurringSection.classList.add(
+            "hidden"
         );
 
-    const startTime =
-        document.getElementById("startTime").value;
+        return;
 
-    const endTime =
-        document.getElementById("endTime").value;
+    }
 
 
-    if (!person || !vehicleElement) {
+    const schedules =
+        getRecurringSchedules(
+            person
+        );
 
-        formError.textContent =
-            "Completa todos los campos.";
+
+    if (
+        schedules.length === 0
+    ) {
+
+        recurringSection.classList.add(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+
+    recurringSection.classList.remove(
+        "hidden"
+    );
+
+
+    schedules.forEach(
+        schedule => {
+
+            const button =
+                document.createElement(
+                    "button"
+                );
+
+
+            button.type =
+                "button";
+
+
+            button.className =
+                "recurring-option";
+
+
+            button.innerHTML =
+                `
+                <span class="recurring-main">
+
+                    <strong>
+                        ${escapeHtml(
+                            schedule.vehicle
+                        )}
+                        ·
+                        ${escapeHtml(
+                            schedule.startTime
+                        )}
+                        –
+                        ${escapeHtml(
+                            schedule.endTime
+                        )}
+                    </strong>
+
+                    <span>
+                        ${vehicleColorName(
+                            schedule.vehicle
+                        )}
+                    </span>
+
+                </span>
+
+                <span class="recurring-count">
+                    ${schedule.count}
+                    ${schedule.count === 1
+                        ? "uso"
+                        : "usos"}
+                </span>
+                `;
+
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    applyRecurringSchedule(
+                        schedule
+                    );
+
+                }
+            );
+
+
+            recurringList.appendChild(
+                button
+            );
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CALCULAR HORARIOS HABITUALES
+   ========================================================= */
+
+function getRecurringSchedules(
+    person
+) {
+
+    const usage = {};
+
+
+    reservations
+        .filter(
+            reservation =>
+                reservation.person ===
+                person
+        )
+        .forEach(
+            reservation => {
+
+                const key =
+                    [
+                        reservation.vehicle,
+                        reservation.startTime,
+                        reservation.endTime
+                    ].join("|");
+
+
+                if (!usage[key]) {
+
+                    usage[key] = {
+
+                        vehicle:
+                            reservation.vehicle,
+
+                        startTime:
+                            reservation.startTime,
+
+                        endTime:
+                            reservation.endTime,
+
+                        count:
+                            0
+
+                    };
+
+                }
+
+
+                usage[key].count++;
+
+            }
+        );
+
+
+    return Object.values(
+        usage
+    )
+        .sort(
+            (a, b) =>
+                b.count - a.count
+        );
+
+}
+
+
+/* =========================================================
+   APLICAR HORARIO RECURRENTE
+   ========================================================= */
+
+function applyRecurringSchedule(
+    schedule
+) {
+
+    const vehicleInput =
+        document.querySelector(
+            `input[name="vehicle"][value="${schedule.vehicle}"]`
+        );
+
+
+    if (vehicleInput) {
+
+        vehicleInput.checked =
+            true;
+
+    }
+
+
+    document.getElementById(
+        "startTime"
+    ).value =
+        schedule.startTime;
+
+
+    document.getElementById(
+        "endTime"
+    ).value =
+        schedule.endTime;
+
+
+    updateBookingPreview();
+
+}
+
+
+/* =========================================================
+   REPETICIÓN
+   ========================================================= */
+
+function updateRepeatInterface() {
+
+    const repeatType =
+        document.querySelector(
+            'input[name="repeatType"]:checked'
+        ).value;
+
+
+    if (
+        repeatType ===
+        "multiple"
+    ) {
+
+        multipleDaysSection.classList.remove(
+            "hidden"
+        );
+
+    } else {
+
+        multipleDaysSection.classList.add(
+            "hidden"
+        );
+
+    }
+
+
+    updateBookingPreview();
+
+}
+
+
+/* =========================================================
+   PREVISUALIZACIÓN
+   ========================================================= */
+
+function updateBookingPreview() {
+
+    const repeatType =
+        document.querySelector(
+            'input[name="repeatType"]:checked'
+        ).value;
+
+
+    if (
+        repeatType === "single"
+    ) {
+
+        bookingPreview.classList.add(
+            "hidden"
+        );
 
         return;
 
@@ -464,405 +1067,119 @@ function createReservation(event) {
 
 
     const vehicle =
-        vehicleElement.value;
+        document.querySelector(
+            'input[name="vehicle"]:checked'
+        )?.value;
 
 
-    if (startTime >= endTime) {
+    const startDate =
+        document.getElementById(
+            "rangeStart"
+        ).value;
 
-        formError.textContent =
-            "La hora de finalización debe ser posterior a la hora de inicio.";
+
+    const endDate =
+        document.getElementById(
+            "rangeEnd"
+        ).value;
+
+
+    const startTime =
+        document.getElementById(
+            "startTime"
+        ).value;
+
+
+    const endTime =
+        document.getElementById(
+            "endTime"
+        ).value;
+
+
+    const weekdays =
+        getSelectedWeekdays();
+
+
+    if (
+        !vehicle ||
+        !startDate ||
+        !endDate ||
+        !startTime ||
+        !endTime ||
+        weekdays.length === 0
+    ) {
+
+        bookingPreview.classList.add(
+            "hidden"
+        );
 
         return;
 
     }
 
 
-    /*
-     * Comprobar si existe otra reserva
-     * del mismo vehículo con solapamiento.
-     */
-    const conflict =
-        reservations.some(
-            reservation => {
+    if (
+        startDate > endDate
+    ) {
 
-                if (
-                    reservation.date !== selectedDate
-                ) {
-                    return false;
-                }
+        bookingPreview.classList.add(
+            "hidden"
+        );
+
+        return;
+
+    }
 
 
-                if (
-                    reservation.vehicle !== vehicle
-                ) {
-                    return false;
-                }
-
-
-                return (
-                    startTime < reservation.endTime &&
-                    endTime > reservation.startTime
-                );
-
-            }
+    const dates =
+        getDatesForWeekdays(
+            startDate,
+            endDate,
+            weekdays
         );
 
 
-    if (conflict) {
+    if (
+        dates.length === 0
+    ) {
 
-        formError.textContent =
-            `El ${vehicle} ya está reservado durante ese horario.`;
+        bookingPreview.classList.add(
+            "hidden"
+        );
 
         return;
 
     }
 
 
-    const newReservation = {
-
-        id:
-            Date.now().toString(),
-
-        date:
-            selectedDate,
-
-        person:
-            person,
-
-        vehicle:
-            vehicle,
-
-        startTime:
-            startTime,
-
-        endTime:
-            endTime
-
-    };
+    const conflicts =
+        dates.filter(
+            date =>
+                hasConflict(
+                    date,
+                    vehicle,
+                    startTime,
+                    endTime
+                )
+        );
 
 
-    reservations.push(
-        newReservation
-    );
-
-
-    saveReservations();
-
-
-    closeReservationModal();
-
-    renderCalendar();
-
-    renderSelectedDay();
-
-}
-
-
-/* ---------------------------------------------------------
-   ELIMINAR RESERVA
-   --------------------------------------------------------- */
-
-function openDeleteModal(id) {
-
-    reservationToDelete =
-        id;
-
-    deleteModal.classList.remove(
+    bookingPreview.classList.remove(
         "hidden"
     );
 
-    document.body.style.overflow =
-        "hidden";
 
-}
-
-
-function closeDeleteModal() {
-
-    deleteModal.classList.add(
-        "hidden"
-    );
-
-    reservationToDelete =
-        null;
-
-    document.body.style.overflow =
-        "";
-
-}
-
-
-function deleteReservation() {
-
-    if (!reservationToDelete) {
-        return;
-    }
-
-
-    reservations =
-        reservations.filter(
-            reservation =>
-                reservation.id !==
-                reservationToDelete
-        );
-
-
-    saveReservations();
-
-    closeDeleteModal();
-
-    renderCalendar();
-
-    renderSelectedDay();
-
-}
-
-
-/* ---------------------------------------------------------
-   NAVEGACIÓN DEL CALENDARIO
-   --------------------------------------------------------- */
-
-previousMonthButton.addEventListener(
-    "click",
-    () => {
-
-        currentMonth =
-            new Date(
-                currentMonth.getFullYear(),
-                currentMonth.getMonth() - 1,
-                1
-            );
-
-        renderCalendar();
-
-    }
-);
-
-
-nextMonthButton.addEventListener(
-    "click",
-    () => {
-
-        currentMonth =
-            new Date(
-                currentMonth.getFullYear(),
-                currentMonth.getMonth() + 1,
-                1
-            );
-
-        renderCalendar();
-
-    }
-);
-
-
-todayButton.addEventListener(
-    "click",
-    () => {
-
-        currentMonth =
-            new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                1
-            );
-
-        selectedDate =
-            formatDate(today);
-
-        renderCalendar();
-
-        renderSelectedDay();
-
-    }
-);
-
-
-/* ---------------------------------------------------------
-   BOTONES MODAL
-   --------------------------------------------------------- */
-
-addReservationButton.addEventListener(
-    "click",
-    openReservationModal
-);
-
-
-closeModalButton.addEventListener(
-    "click",
-    closeReservationModal
-);
-
-
-modalOverlay.addEventListener(
-    "click",
-    closeReservationModal
-);
-
-
-reservationForm.addEventListener(
-    "submit",
-    createReservation
-);
-
-
-cancelDelete.addEventListener(
-    "click",
-    closeDeleteModal
-);
-
-
-confirmDelete.addEventListener(
-    "click",
-    deleteReservation
-);
-
-
-/* ---------------------------------------------------------
-   TECLA ESC
-   --------------------------------------------------------- */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (event.key !== "Escape") {
-            return;
-        }
-
-        closeReservationModal();
-
-        closeDeleteModal();
-
-    }
-);
-
-
-/* ---------------------------------------------------------
-   LOCAL STORAGE
-   --------------------------------------------------------- */
-
-function loadReservations() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
-
-
-        if (!saved) {
-            return [];
-        }
-
-
-        const parsed =
-            JSON.parse(saved);
-
-
-        return Array.isArray(parsed)
-            ? parsed
-            : [];
-
-    } catch (error) {
-
-        console.error(
-            "Error cargando reservas:",
-            error
-        );
-
-        return [];
-
-    }
-
-}
-
-
-function saveReservations() {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(reservations)
-    );
-
-}
-
-
-/* ---------------------------------------------------------
-   UTILIDADES
-   --------------------------------------------------------- */
-
-function formatDate(date) {
-
-    const year =
-        date.getFullYear();
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(2, "0");
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(2, "0");
-
-
-    return `${year}-${month}-${day}`;
-
-}
-
-
-function parseDate(dateString) {
-
-    const [
-        year,
-        month,
-        day
-    ] = dateString.split("-").map(Number);
-
-
-    return new Date(
-        year,
-        month - 1,
-        day
-    );
-
-}
-
-
-function hasReservations(dateString) {
-
-    return reservations.some(
-        reservation =>
-            reservation.date ===
-            dateString
-    );
-
-}
-
-
-function capitalize(text) {
-
-    return text.charAt(0).toUpperCase()
-        + text.slice(1);
-
-}
-
-
-/*
- * Evita insertar texto introducido
- * por el usuario directamente en HTML.
- */
-function escapeHtml(text) {
-
-    const div =
-        document.createElement("div");
-
-    div.textContent =
-        text;
-
-    return div.innerHTML;
-
-}
+    let html =
+        `
+        <div class="preview-title">
+            Resumen
+        </div>
+
+        Se crearán
+        <strong>${dates.length}</strong>
+        reservas para el
+        <strong>${vehicle}</strong>
+        de
+        <strong>${startTime}</strong>
+        a
+        <strong
