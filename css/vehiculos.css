@@ -473,6 +473,146 @@ button {
     font-size: 18px;
 }
 
+/* ---------------------------------------------------------
+   CUALQUIER COCHE
+   --------------------------------------------------------- */
+
+.vehicle-any {
+    --vehicle-color: #e6b800;
+}
+
+.vehicle-any .vehicle-radio {
+    border-color: #e6b800;
+}
+
+.vehicle-any
+input:checked
++ .vehicle-radio {
+    border-color: #e6b800;
+}
+
+
+/* ---------------------------------------------------------
+   RESERVAR TODO EL DÍA
+   --------------------------------------------------------- */
+
+.all-day-option {
+    margin-bottom: 20px;
+}
+
+
+.all-day-label {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    padding: 13px;
+
+    border:
+        1px solid
+        var(--border);
+
+    border-radius: 13px;
+
+    background: #fff;
+
+    cursor: pointer;
+}
+
+
+.all-day-label input {
+    position: absolute;
+
+    opacity: 0;
+}
+
+
+.all-day-check {
+    width: 22px;
+    height: 22px;
+
+    flex-shrink: 0;
+
+    border:
+        2px solid
+        #ccc;
+
+    border-radius: 6px;
+}
+
+
+.all-day-label
+input:checked
++ .all-day-check {
+
+    border-color: var(--text);
+
+    background: var(--text);
+
+    position: relative;
+}
+
+
+.all-day-label
+input:checked
++ .all-day-check::after {
+
+    content: "✓";
+
+    position: absolute;
+
+    top: 50%;
+    left: 50%;
+
+    transform:
+        translate(
+            -50%,
+            -50%
+        );
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 700;
+}
+
+
+.all-day-text {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 3px;
+}
+
+
+.all-day-text strong {
+    font-size: 14px;
+}
+
+
+.all-day-text small {
+
+    color: var(--muted);
+
+    font-size: 12px;
+}
+
+
+/* Cuando todo el día está seleccionado */
+
+.all-day-active
+input[type="time"] {
+
+    opacity: 0.5;
+
+    pointer-events: none;
+}
+
 
 /* ---------------------------------------------------------
    MODAL
