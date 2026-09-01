@@ -1,87 +1,664 @@
-.calendar-day.has-reservations {
+/* =========================================================
+   CONTROL DE VEHÍCULOS
+   Diseño mobile-first
+   ========================================================= */
+
+:root {
+    --background: #f5f5f5;
+    --card: #ffffff;
+    --text: #202020;
+    --muted: #777777;
+    --border: #e5e5e5;
+
+    --c3: #2d6cdf;
+    --c4: #8a8a8a;
+    --laguna: #245b42;
+
+    --danger: #c0392b;
+
+    --radius: 16px;
+}
+
+
+/* ---------------------------------------------------------
+   GENERAL
+   --------------------------------------------------------- */
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    background: var(--background);
+    color: var(--text);
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+
+/* ---------------------------------------------------------
+   APP
+   --------------------------------------------------------- */
+
+.vehicles-app {
+    width: 100%;
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px 16px 40px;
+}
+
+
+/* ---------------------------------------------------------
+   CABECERA
+   --------------------------------------------------------- */
+
+.app-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+}
+
+.app-header h1 {
+    margin: 0;
+    font-size: 24px;
+    line-height: 1.2;
+}
+
+.app-header p {
+    margin: 4px 0 0;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+    background: var(--card);
+
+    color: var(--text);
+    text-decoration: none;
+
+    font-size: 26px;
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+
+/* ---------------------------------------------------------
+   CALENDARIO
+   --------------------------------------------------------- */
+
+.calendar-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    padding: 16px;
+
+    box-shadow: 0 3px 15px rgba(0, 0, 0, 0.05);
+}
+
+.calendar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 18px;
+}
+
+.calendar-header h2 {
+    margin: 0;
+    font-size: 18px;
+    text-transform: capitalize;
+}
+
+.month-button {
+    width: 42px;
+    height: 42px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f2f2f2;
+    color: var(--text);
+
+    font-size: 28px;
+    line-height: 1;
+}
+
+.weekdays,
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+}
+
+.weekdays {
+    margin-bottom: 8px;
+}
+
+.weekdays span {
+    text-align: center;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.calendar-grid {
+    gap: 4px;
+}
+
+.calendar-day {
     position: relative;
+
+    min-height: 48px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 0;
+    border-radius: 12px;
+
+    background: transparent;
+    color: var(--text);
+
+    font-size: 15px;
 }
 
-.calendar-day.reserved-c3::after,
-.calendar-day.reserved-c4::after,
-.calendar-day.reserved-laguna::after {
+.calendar-day:not(.empty):active {
+    transform: scale(0.94);
+}
+
+.calendar-day.empty {
+    pointer-events: none;
+}
+
+.calendar-day.today {
+    font-weight: 700;
+    border: 2px solid var(--text);
+}
+
+.calendar-day.selected {
+    background: var(--text);
+    color: white;
+}
+
+.calendar-day.has-reservations::after {
     content: "";
+
     position: absolute;
     bottom: 5px;
+
     width: 5px;
     height: 5px;
+
     border-radius: 50%;
+    background: var(--text);
 }
 
-.calendar-day.reserved-c3::after {
+.calendar-day.selected.has-reservations::after {
+    background: white;
+}
+
+.today-button {
+    display: block;
+
+    width: 100%;
+    margin-top: 14px;
+    padding: 11px;
+
+    border: 1px solid var(--border);
+    border-radius: 10px;
+
+    background: transparent;
+    color: var(--text);
+
+    font-size: 14px;
+}
+
+
+/* ---------------------------------------------------------
+   RESERVAS DEL DÍA
+   --------------------------------------------------------- */
+
+.day-section {
+    margin-top: 28px;
+}
+
+.section-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    margin-bottom: 14px;
+}
+
+.section-label {
+    display: block;
+
+    color: var(--muted);
+
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+}
+
+.section-title h2 {
+    margin: 4px 0 0;
+    font-size: 20px;
+}
+
+.add-button {
+    width: 46px;
+    height: 46px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: var(--text);
+    color: white;
+
+    font-size: 28px;
+    line-height: 1;
+}
+
+
+/* ---------------------------------------------------------
+   RESERVA
+   --------------------------------------------------------- */
+
+.reservations-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.empty-message {
+    padding: 28px 20px;
+
+    border-radius: var(--radius);
+
+    background: var(--card);
+
+    color: var(--muted);
+    text-align: center;
+}
+
+.reservation {
+    display: flex;
+    align-items: stretch;
+
+    overflow: hidden;
+
+    background: var(--card);
+    border-radius: var(--radius);
+
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.04);
+}
+
+.vehicle-color {
+    width: 7px;
+    flex-shrink: 0;
+}
+
+.reservation-c3 .vehicle-color {
     background: var(--c3);
 }
 
-.calendar-day.reserved-c4::after {
+.reservation-c4 .vehicle-color {
     background: var(--c4);
 }
 
-.calendar-day.reserved-laguna::after {
+.reservation-laguna .vehicle-color {
     background: var(--laguna);
 }
 
-/* Cuando hay más de un vehículo reservado,
-   colocamos los puntos juntos */
-.calendar-day.reserved-c3.reserved-c4::after {
-    left: calc(50% - 7px);
+.reservation-content {
+    flex: 1;
+    padding: 14px 15px;
 }
 
-.calendar-day.reserved-c3.reserved-laguna::after {
-    left: calc(50% - 7px);
+.reservation-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 10px;
 }
 
-.calendar-day.reserved-c4.reserved-laguna::after {
-    left: calc(50% - 7px);
+.reservation-vehicle {
+    font-weight: 700;
+    font-size: 16px;
 }
 
-.calendar-day.reserved-c3.reserved-c4.reserved-laguna::after {
-    left: calc(50% - 9px);
+.reservation-person {
+    margin-top: 5px;
+    font-size: 14px;
 }
 
-/* Segundo punto */
-.calendar-day.reserved-c3.reserved-c4::before,
-.calendar-day.reserved-c3.reserved-laguna::before,
-.calendar-day.reserved-c4.reserved-laguna::before {
-    content: "";
+.reservation-time {
+    margin-top: 4px;
+
+    color: var(--muted);
+
+    font-size: 13px;
+}
+
+.delete-reservation {
+    align-self: center;
+
+    margin-right: 12px;
+
+    width: 36px;
+    height: 36px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f5f5f5;
+
+    color: var(--muted);
+    font-size: 18px;
+}
+
+
+/* ---------------------------------------------------------
+   MODAL
+   --------------------------------------------------------- */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    z-index: 100;
+
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+}
+
+.modal.hidden {
+    display: none;
+}
+
+.modal-overlay {
     position: absolute;
-    bottom: 5px;
-    width: 5px;
-    height: 5px;
+    inset: 0;
+
+    background: rgba(0, 0, 0, 0.45);
+}
+
+.modal-content,
+.confirm-content {
+    position: relative;
+    z-index: 2;
+
+    width: 100%;
+    max-width: 600px;
+
+    background: var(--card);
+
+    border-radius: 22px 22px 0 0;
+
+    padding: 22px 18px 28px;
+
+    max-height: 92vh;
+    overflow-y: auto;
+
+    animation: slideUp 0.2s ease;
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    margin-bottom: 24px;
+}
+
+.modal-header h2 {
+    margin: 4px 0 0;
+    font-size: 21px;
+}
+
+.close-button {
+    width: 40px;
+    height: 40px;
+
+    border: 0;
+    border-radius: 50%;
+
+    background: #f3f3f3;
+
+    font-size: 25px;
+}
+
+
+/* ---------------------------------------------------------
+   FORMULARIO
+   --------------------------------------------------------- */
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+
+    margin-bottom: 8px;
+
+    font-size: 14px;
+    font-weight: 600;
+}
+
+select,
+input[type="time"] {
+    width: 100%;
+
+    min-height: 50px;
+
+    padding: 0 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 12px;
+
+    background: white;
+    color: var(--text);
+
+    outline: none;
+}
+
+select:focus,
+input[type="time"]:focus {
+    border-color: var(--text);
+}
+
+
+/* ---------------------------------------------------------
+   VEHÍCULOS
+   --------------------------------------------------------- */
+
+.vehicle-options {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.vehicle-option {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+
+    padding: 13px;
+
+    border: 2px solid var(--border);
+    border-radius: 13px;
+
+    cursor: pointer;
+}
+
+.vehicle-option input {
+    position: absolute;
+    opacity: 0;
+}
+
+.vehicle-radio {
+    width: 22px;
+    height: 22px;
+
+    margin-right: 12px;
+
+    border: 2px solid #ccc;
     border-radius: 50%;
 }
 
-.calendar-day.reserved-c3.reserved-c4::before {
-    left: calc(50% + 2px);
-    background: var(--c4);
+.vehicle-option input:checked + .vehicle-radio {
+    border: 6px solid var(--text);
 }
 
-.calendar-day.reserved-c3.reserved-laguna::before {
-    left: calc(50% + 2px);
-    background: var(--laguna);
+.vehicle-info {
+    display: flex;
+    flex-direction: column;
 }
 
-.calendar-day.reserved-c4.reserved-laguna::before {
-    left: calc(50% + 2px);
-    background: var(--laguna);
+.vehicle-info strong {
+    font-size: 15px;
 }
 
-/* Tres vehículos */
-.calendar-day.reserved-c3.reserved-c4.reserved-laguna::before {
-    left: calc(50% - 2px);
-    background: var(--c4);
+.vehicle-info small {
+    margin-top: 2px;
+    color: var(--muted);
+    font-size: 12px;
 }
 
-.calendar-day.reserved-c3.reserved-c4.reserved-laguna {
-    /* El tercer punto se crea con un box-shadow */
+.vehicle-option:has(input:checked) {
+    border-color: var(--text);
 }
 
-.calendar-day.reserved-c3.reserved-c4.reserved-laguna::after {
-    left: calc(50% - 8px);
-    background: var(--c3);
-    box-shadow: 8px 0 0 var(--laguna);
+.time-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-error {
+    min-height: 20px;
+
+    margin: 0 0 12px;
+
+    color: var(--danger);
+
+    font-size: 13px;
+}
+
+.submit-button {
+    width: 100%;
+
+    min-height: 52px;
+
+    border: 0;
+    border-radius: 13px;
+
+    background: var(--text);
+    color: white;
+
+    font-weight: 700;
+}
+
+
+/* ---------------------------------------------------------
+   CONFIRMACIÓN
+   --------------------------------------------------------- */
+
+.confirm-content {
+    border-radius: 22px 22px 0 0;
+}
+
+.confirm-content h2 {
+    margin-top: 0;
+}
+
+.confirm-content p {
+    color: var(--muted);
+}
+
+.confirm-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    margin-top: 22px;
+}
+
+.secondary-button,
+.delete-button {
+    min-height: 50px;
+
+    border-radius: 12px;
+
+    font-weight: 600;
+}
+
+.secondary-button {
+    border: 1px solid var(--border);
+    background: white;
+}
+
+.delete-button {
+    border: 0;
+    background: var(--danger);
+    color: white;
+}
+
+
+/* ---------------------------------------------------------
+   DESKTOP
+   --------------------------------------------------------- */
+
+@media (min-width: 700px) {
+
+    .vehicles-app {
+        padding-top: 40px;
+    }
+
+    .modal {
+        align-items: center;
+    }
+
+    .modal-content,
+    .confirm-content {
+        border-radius: 22px;
+    }
 }
