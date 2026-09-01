@@ -6,6 +6,14 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 
 const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+// Map de colores por vehículo (para las clases CSS de los puntos)
+const VEHICLE_CLASSES = {
+  'C3': 'dot-c3',
+  'C4': 'dot-c4',
+  'Laguna': 'dot-laguna',
+  'Any': 'dot-any'
+};
+
 // ==========================================
 // 2. REFERENCIAS A ELEMENTOS DEL DOM
 // ==========================================
@@ -35,7 +43,7 @@ const deleteModal = document.getElementById('deleteModal');
 const cancelDeleteBtn = document.getElementById('cancelDelete');
 const confirmDeleteBtn = document.getElementById('confirmDelete');
 
-// Variables de estado local de la UI
+// Variables de estado
 let currentDate = new Date();
 let selectedDate = new Date();
 let reservationToDeleteId = null;
@@ -44,7 +52,7 @@ let reservationToDeleteId = null;
 // 3. FUNCIONES DE BASE DE DATOS (SUPABASE)
 // ==========================================
 
-// Cargar reservas de la fecha dada
+// Cargar reservas de un día específico
 async function fetchReservations(dateString) {
   const { data, error } = await supabaseClient
     .from('reservas')
@@ -53,7 +61,22 @@ async function fetchReservations(dateString) {
     .order('start_time', { ascending: true });
 
   if (error) {
-    console.error('Error al obtener reservas:', error.message);
+    console.error('Error al obtener reservas del día:', error.message);
+    return [];
+  }
+  return data;
+}
+
+// Cargar todas las reservas de un rango de fechas (para el calendario)
+async function fetchMonthReservations(startDateStr, endDateStr) {
+  const { data, error } = await supabaseClient
+    .from('reservas')
+    .select('date, vehicle')
+    .gte('date', startDateStr)
+    .lte('date', endDateStr);
+
+  if (error) {
+    console.error('Error al obtener reservas del mes:', error.message);
     return [];
   }
   return data;
@@ -95,7 +118,8 @@ function setupRealtimeListener() {
       'postgres_changes',
       { event: '*', schema: 'public', table: 'reservas' },
       () => {
-        // Al ocurrir un cambio en la BD, refrescamos el día actual
+        // Al haber cualquier cambio, refrescamos tanto el calendario como el día
+        renderCalendar();
         renderDayReservations();
       }
     )
@@ -103,7 +127,7 @@ function setupRealtimeListener() {
 }
 
 // ==========================================
-// 4. LÓGICA DE LA INTERFAZ (UI) Y CALENDARIO
+// 4. LÓGICA DE LA INTERFAZ Y CALENDARIO
 // ==========================================
 
 function formatDate(date) {
@@ -119,8 +143,8 @@ function formatPrettyDate(date) {
   return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Renderizar el calendario de un mes
-function renderCalendar() {
+// Renderizar el calendario con los puntos indicadores
+async function renderCalendar() {
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth();
 
@@ -135,11 +159,25 @@ function renderCalendar() {
   const firstDay = new Date(year, month, 1);
   const lastDay = new Date(year, month + 1, 0);
 
+  // Obtener reservas de todo el mes actual para los puntos
+  const monthStartStr = formatDate(firstDay);
+  const monthEndStr = formatDate(lastDay);
+  const monthReservations = await fetchMonthReservations(monthStartStr, monthEndStr);
+
+  // Agrupar reservas por fecha
+  const reservationsByDate = {};
+  monthReservations.forEach(res => {
+    if (!reservationsByDate[res.date]) {
+      reservationsByDate[res.date] = [];
+    }
+    reservationsByDate[res.date].push(res.vehicle);
+  });
+
   // Ajustar primer día de la semana (Lunes = 0)
   let startingDay = firstDay.getDay() - 1;
   if (startingDay === -1) startingDay = 6;
 
-  // Huecos vacíos antes del día 1
+  // Celda vacía antes del día 1
   for (let i = 0; i < startingDay; i++) {
     const emptyCell = document.createElement('div');
     emptyCell.classList.add('calendar-day', 'empty');
@@ -152,15 +190,34 @@ function renderCalendar() {
   for (let day = 1; day <= lastDay.getDate(); day++) {
     const dayCell = document.createElement('div');
     dayCell.classList.add('calendar-day');
-    dayCell.textContent = day;
+
+    const dayNumberSpan = document.createElement('span');
+    dayNumberSpan.classList.add('day-number');
+    dayNumberSpan.textContent = day;
+    dayCell.appendChild(dayNumberSpan);
 
     const thisDate = new Date(year, month, day);
+    const dateStr = formatDate(thisDate);
 
     if (thisDate.toDateString() === today.toDateString()) {
       dayCell.classList.add('today');
     }
     if (thisDate.toDateString() === selectedDate.toDateString()) {
       dayCell.classList.add('selected');
+    }
+
+    // Añadir puntos de reservas si existen
+    if (reservationsByDate[dateStr] && reservationsByDate[dateStr].length > 0) {
+      const dotsContainer = document.createElement('div');
+      dotsContainer.classList.add('day-dots');
+
+      reservationsByDate[dateStr].forEach(vehicle => {
+        const dot = document.createElement('span');
+        dot.classList.add('dot', VEHICLE_CLASSES[vehicle] || 'dot-any');
+        dotsContainer.appendChild(dot);
+      });
+
+      dayCell.appendChild(dotsContainer);
     }
 
     dayCell.addEventListener('click', () => {
@@ -173,7 +230,7 @@ function renderCalendar() {
   }
 }
 
-// Renderizar las reservas del día seleccionado cargando desde Supabase
+// Renderizar las reservas del día seleccionado
 async function renderDayReservations() {
   selectedDateTitle.textContent = formatPrettyDate(selectedDate);
   reservationsList.innerHTML = '<p class="loading">Cargando reservas...</p>';
@@ -219,6 +276,12 @@ function openModal() {
   modalDateTitle.textContent = formatPrettyDate(selectedDate);
   formError.textContent = '';
   reservationForm.reset();
+
+  // CORRECCIÓN HORA: Asegurar que las horas no inicien deshabilitadas al abrir el modal
+  allDayCheckbox.checked = false;
+  startTimeInput.disabled = false;
+  endTimeInput.disabled = false;
+
   reservationModal.classList.remove('hidden');
 }
 
@@ -253,6 +316,11 @@ reservationForm.addEventListener('submit', async (e) => {
     return;
   }
 
+  if (!allDay && (!startTime || !endTime)) {
+    formError.textContent = 'Por favor, selecciona la hora de inicio y fin.';
+    return;
+  }
+
   if (!allDay && startTime >= endTime) {
     formError.textContent = 'La hora de inicio debe ser anterior a la de fin.';
     return;
@@ -271,6 +339,7 @@ reservationForm.addEventListener('submit', async (e) => {
 
   if (savedData) {
     closeModal();
+    renderCalendar(); // Recargar calendario para pintar el nuevo punto
     renderDayReservations();
   } else {
     formError.textContent = 'Hubo un error al guardar en el servidor.';
@@ -284,6 +353,7 @@ confirmDeleteBtn.addEventListener('click', async () => {
     if (deleted) {
       reservationToDeleteId = null;
       deleteModal.classList.add('hidden');
+      renderCalendar(); // Recargar calendario para quitar el punto
       renderDayReservations();
     }
   }
@@ -294,7 +364,7 @@ cancelDeleteBtn.addEventListener('click', () => {
   deleteModal.classList.add('hidden');
 });
 
-// NAVEGACIÓN DE MESES Y BOTÓN HOY
+// Navegación de meses
 previousMonthBtn.addEventListener('click', () => {
   currentDate.setMonth(currentDate.getMonth() - 1);
   renderCalendar();
