@@ -2,593 +2,221 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Control de vehículos</title>
 
-    <link
-        rel="stylesheet"
-        href="css/vehiculos.css"
-    >
+    <link rel="stylesheet" href="css/vehiculos.css">
 </head>
 
 <body>
 
-<main class="vehicles-app">
+    <main class="vehicles-app">
 
-    <!-- CABECERA -->
-    <header class="app-header">
-
-        <a
-            href="index.html"
-            class="back-button"
-            aria-label="Volver"
-        >
-            ←
-        </a>
-
-        <div>
-            <h1>Control de vehículos</h1>
-            <p>Reservas familiares</p>
-        </div>
-
-    </header>
-
-
-    <!-- CALENDARIO -->
-    <section class="calendar-card">
-
-        <div class="calendar-header">
-
-            <button
-                id="previousMonth"
-                class="month-button"
-                aria-label="Mes anterior"
-            >
-                ‹
-            </button>
-
-            <h2 id="monthTitle"></h2>
-
-            <button
-                id="nextMonth"
-                class="month-button"
-                aria-label="Mes siguiente"
-            >
-                ›
-            </button>
-
-        </div>
-
-
-        <div class="weekdays">
-            <span>L</span>
-            <span>M</span>
-            <span>X</span>
-            <span>J</span>
-            <span>V</span>
-            <span>S</span>
-            <span>D</span>
-        </div>
-
-
-        <div
-            id="calendar"
-            class="calendar-grid"
-        ></div>
-
-
-        <button
-            id="todayButton"
-            class="today-button"
-        >
-            Ir a hoy
-        </button>
-
-    </section>
-
-
-    <!-- RESERVAS DEL DÍA -->
-    <section class="day-section">
-
-        <div class="section-title">
+        <!-- CABECERA -->
+        <header class="app-header">
+            <a href="index.html" class="back-button" aria-label="Volver">
+                ←
+            </a>
 
             <div>
-                <span class="section-label">
-                    RESERVAS
-                </span>
+                <h1>Control de vehículos</h1>
+                <p>Reservas familiares</p>
+            </div>
+        </header>
 
-                <h2 id="selectedDateTitle"></h2>
+
+        <!-- CALENDARIO -->
+        <section class="calendar-card">
+
+            <div class="calendar-header">
+                <button id="previousMonth" class="month-button" aria-label="Mes anterior">
+                    ‹
+                </button>
+
+                <h2 id="monthTitle"></h2>
+
+                <button id="nextMonth" class="month-button" aria-label="Mes siguiente">
+                    ›
+                </button>
             </div>
 
-            <button
-                id="addReservationButton"
-                class="add-button"
-                aria-label="Nueva reserva"
-            >
-                +
+            <div class="weekdays">
+                <span>L</span>
+                <span>M</span>
+                <span>X</span>
+                <span>J</span>
+                <span>V</span>
+                <span>S</span>
+                <span>D</span>
+            </div>
+
+            <div id="calendar" class="calendar-grid"></div>
+
+            <button id="todayButton" class="today-button">
+                Ir a hoy
             </button>
 
-        </div>
+        </section>
 
 
-        <div
-            id="reservationsList"
-            class="reservations-list"
-        ></div>
+        <!-- RESERVAS DEL DÍA -->
+        <section class="day-section">
 
-    </section>
+            <div class="section-title">
+                <div>
+                    <span class="section-label">RESERVAS</span>
+                    <h2 id="selectedDateTitle"></h2>
+                </div>
 
-</main>
-
-
-<!-- =====================================================
-     MODAL NUEVA RESERVA
-     ===================================================== -->
-
-<div
-    id="reservationModal"
-    class="modal hidden"
->
-
-    <div
-        class="modal-overlay"
-        id="modalOverlay"
-    ></div>
-
-
-    <div class="modal-content">
-
-        <div class="modal-header">
-
-            <div>
-                <span class="section-label">
-                    NUEVA RESERVA
-                </span>
-
-                <h2 id="modalDateTitle"></h2>
+                <button id="addReservationButton" class="add-button">
+                    +
+                </button>
             </div>
 
-            <button
-                id="closeModalButton"
-                class="close-button"
-                aria-label="Cerrar"
-            >
-                ×
-            </button>
+            <div id="reservationsList" class="reservations-list"></div>
 
-        </div>
+        </section>
+
+    </main>
 
 
-        <form id="reservationForm">
+    <!-- MODAL NUEVA RESERVA -->
+    <div id="reservationModal" class="modal hidden">
 
-            <!-- PERSONA -->
-            <div class="form-group">
+        <div class="modal-overlay" id="modalOverlay"></div>
 
-                <label for="person">
-                    ¿Quién?
-                </label>
+        <div class="modal-content">
 
-                <select
-                    id="person"
-                    required
-                >
-                    <option value="">
-                        Selecciona una persona
-                    </option>
+            <div class="modal-header">
+                <div>
+                    <span class="section-label">NUEVA RESERVA</span>
+                    <h2 id="modalDateTitle"></h2>
+                </div>
 
-                    <option value="Cristina">
-                        Cristina
-                    </option>
-
-                    <option value="Raúl">
-                        Raúl
-                    </option>
-
-                    <option value="Pau">
-                        Pau
-                    </option>
-
-                    <option value="Lluc">
-                        Lluc
-                    </option>
-
-                    <option value="Mar">
-                        Mar
-                    </option>
-                </select>
-
+                <button id="closeModalButton" class="close-button">
+                    ×
+                </button>
             </div>
 
 
-            <!-- HORARIOS RECURRENTES -->
-            <div
-                id="recurringSection"
-                class="recurring-section hidden"
-            >
+            <form id="reservationForm">
 
-                <div class="recurring-title">
+                <!-- PERSONA -->
+                <div class="form-group">
+                    <label for="person">¿Quién?</label>
 
-                    <div>
-                        <span class="section-label">
-                            HORARIOS RECURRENTES
-                        </span>
+                    <select id="person" required>
+                        <option value="">Selecciona una persona</option>
+                        <option value="Cristina">Cristina</option>
+                        <option value="Raúl">Raúl</option>
+                        <option value="Pau">Pau</option>
+                        <option value="Lluc">Lluc</option>
+                        <option value="Mar">Mar</option>
+                    </select>
+                </div>
 
-                        <strong>
-                            Horarios habituales
-                        </strong>
+
+                <!-- VEHÍCULO -->
+                <div class="form-group">
+                    <label>¿Qué vehículo?</label>
+
+                    <div class="vehicle-options">
+
+                        <label class="vehicle-option vehicle-c3">
+                            <input type="radio" name="vehicle" value="C3" required>
+                            <span class="vehicle-radio"></span>
+
+                            <span class="vehicle-info">
+                                <strong>C3</strong>
+                                <small>Azul</small>
+                            </span>
+                        </label>
+
+
+                        <label class="vehicle-option vehicle-c4">
+                            <input type="radio" name="vehicle" value="C4">
+                            <span class="vehicle-radio"></span>
+
+                            <span class="vehicle-info">
+                                <strong>C4</strong>
+                                <small>Gris</small>
+                            </span>
+                        </label>
+
+
+                        <label class="vehicle-option vehicle-laguna">
+                            <input type="radio" name="vehicle" value="Laguna">
+                            <span class="vehicle-radio"></span>
+
+                            <span class="vehicle-info">
+                                <strong>Laguna</strong>
+                                <small>Verde oscuro</small>
+                            </span>
+                        </label>
+
                     </div>
-
                 </div>
 
 
-                <p class="recurring-help">
-                    Puedes reutilizar rápidamente un
-                    horario que esta persona haya usado
-                    anteriormente.
-                </p>
-
-
-                <div
-                    id="recurringList"
-                    class="recurring-list"
-                ></div>
-
-            </div>
-
-
-            <!-- VEHÍCULO -->
-            <div class="form-group">
-
-                <label>
-                    ¿Qué vehículo?
-                </label>
-
-
-                <div class="vehicle-options">
-
-                    <label class="vehicle-option">
-
-                        <input
-                            type="radio"
-                            name="vehicle"
-                            value="C3"
-                            required
-                        >
-
-                        <span class="vehicle-radio"></span>
-
-                        <span class="vehicle-dot c3-dot"></span>
-
-                        <span class="vehicle-info">
-                            <strong>C3</strong>
-                            <small>Azul</small>
-                        </span>
-
-                    </label>
-
-
-                    <label class="vehicle-option">
-
-                        <input
-                            type="radio"
-                            name="vehicle"
-                            value="C4"
-                        >
-
-                        <span class="vehicle-radio"></span>
-
-                        <span class="vehicle-dot c4-dot"></span>
-
-                        <span class="vehicle-info">
-                            <strong>C4</strong>
-                            <small>Gris</small>
-                        </span>
-
-                    </label>
-
-
-                    <label class="vehicle-option">
-
-                        <input
-                            type="radio"
-                            name="vehicle"
-                            value="Laguna"
-                        >
-
-                        <span class="vehicle-radio"></span>
-
-                        <span class="vehicle-dot laguna-dot"></span>
-
-                        <span class="vehicle-info">
-                            <strong>Laguna</strong>
-                            <small>Verde oscuro</small>
-                        </span>
-
-                    </label>
-
-                </div>
-
-            </div>
-
-
-            <!-- REPETICIÓN -->
-            <div class="form-group">
-
-                <label>
-                    ¿Cuántos días?
-                </label>
-
-
-                <div class="repeat-options">
-
-                    <label class="repeat-option">
-
-                        <input
-                            type="radio"
-                            name="repeatType"
-                            value="single"
-                            checked
-                        >
-
-                        <span>
-                            Solo este día
-                        </span>
-
-                    </label>
-
-
-                    <label class="repeat-option">
-
-                        <input
-                            type="radio"
-                            name="repeatType"
-                            value="multiple"
-                        >
-
-                        <span>
-                            Varios días
-                        </span>
-
-                    </label>
-
-                </div>
-
-            </div>
-
-
-            <!-- OPCIONES VARIOS DÍAS -->
-            <div
-                id="multipleDaysSection"
-                class="multiple-days-section hidden"
-            >
-
-                <div class="date-range">
+                <!-- HORARIOS -->
+                <div class="time-row">
 
                     <div class="form-group">
-
-                        <label for="rangeStart">
-                            Desde
-                        </label>
-
-                        <input
-                            type="date"
-                            id="rangeStart"
-                        >
-
+                        <label for="startTime">Desde</label>
+                        <input type="time" id="startTime" required>
                     </div>
-
 
                     <div class="form-group">
-
-                        <label for="rangeEnd">
-                            Hasta
-                        </label>
-
-                        <input
-                            type="date"
-                            id="rangeEnd"
-                        >
-
+                        <label for="endTime">Hasta</label>
+                        <input type="time" id="endTime" required>
                     </div>
 
                 </div>
 
 
-                <div class="form-group">
+                <p id="formError" class="form-error"></p>
 
-                    <label>
-                        Repetir los días
-                    </label>
+                <button type="submit" class="submit-button">
+                    Reservar vehículo
+                </button>
 
-
-                    <div class="weekday-options">
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="1"
-                                class="weekday-checkbox"
-                            >
-                            <span>L</span>
-                        </label>
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="2"
-                                class="weekday-checkbox"
-                            >
-                            <span>M</span>
-                        </label>
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="3"
-                                class="weekday-checkbox"
-                            >
-                            <span>X</span>
-                        </label>
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="4"
-                                class="weekday-checkbox"
-                            >
-                            <span>J</span>
-                        </label>
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="5"
-                                class="weekday-checkbox"
-                            >
-                            <span>V</span>
-                        </label>
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="6"
-                                class="weekday-checkbox"
-                            >
-                            <span>S</span>
-                        </label>
-
-                        <label>
-                            <input
-                                type="checkbox"
-                                value="0"
-                                class="weekday-checkbox"
-                            >
-                            <span>D</span>
-                        </label>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <!-- HORARIO -->
-            <div class="time-row">
-
-                <div class="form-group">
-
-                    <label for="startTime">
-                        Desde
-                    </label>
-
-                    <input
-                        type="time"
-                        id="startTime"
-                        required
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="endTime">
-                        Hasta
-                    </label>
-
-                    <input
-                        type="time"
-                        id="endTime"
-                        required
-                    >
-
-                </div>
-
-            </div>
-
-
-            <!-- ERROR -->
-            <p
-                id="formError"
-                class="form-error"
-            ></p>
-
-
-            <!-- PREVISUALIZACIÓN -->
-            <div
-                id="bookingPreview"
-                class="booking-preview hidden"
-            ></div>
-
-
-            <button
-                type="submit"
-                class="submit-button"
-            >
-                Reservar vehículo
-            </button>
-
-        </form>
-
-    </div>
-
-</div>
-
-
-<!-- =====================================================
-     MODAL ELIMINAR
-     ===================================================== -->
-
-<div
-    id="deleteModal"
-    class="modal hidden"
->
-
-    <div class="modal-overlay"></div>
-
-
-    <div class="confirm-content">
-
-        <span class="section-label">
-            CONFIRMAR
-        </span>
-
-        <h2>Eliminar reserva</h2>
-
-        <p>
-            ¿Quieres eliminar esta reserva?
-        </p>
-
-
-        <div class="confirm-buttons">
-
-            <button
-                id="cancelDelete"
-                class="secondary-button"
-            >
-                Cancelar
-            </button>
-
-            <button
-                id="confirmDelete"
-                class="delete-button"
-            >
-                Eliminar
-            </button>
+            </form>
 
         </div>
 
     </div>
 
-</div>
+
+    <!-- MODAL CONFIRMACIÓN / ELIMINACIÓN -->
+    <div id="deleteModal" class="modal hidden">
+
+        <div class="modal-overlay"></div>
+
+        <div class="confirm-content">
+
+            <h2>Eliminar reserva</h2>
+
+            <p>
+                ¿Quieres eliminar esta reserva?
+            </p>
+
+            <div class="confirm-buttons">
+                <button id="cancelDelete" class="secondary-button">
+                    Cancelar
+                </button>
+
+                <button id="confirmDelete" class="delete-button">
+                    Eliminar
+                </button>
+            </div>
+
+        </div>
+
+    </div>
 
 
-<script src="js/vehiculos.js"></script>
+    <script src="js/vehiculos.js"></script>
 
 </body>
 </html>
