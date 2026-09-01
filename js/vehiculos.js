@@ -1,1497 +1,326 @@
-
-// Supabase
+// ==========================================
+// 1. CONFIGURACIÓN E INICIALIZACIÓN SUPABASE
+// ==========================================
 const SUPABASE_URL = 'https://wtcvawprxmblnuiauixp.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0Y3Zhd3ByeG1ibG51aWF1aXhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzA0MzgsImV4cCI6MjEwMzg0NjQzOH0.-tyDzGCQ6k1pJ5Kg-UX0rq9K7uQ_PV4FR2_0lgdRvr8';
 
-const supabaseClient = supabase.createClient(https://wtcvawprxmblnuiauixp.supabase.co, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0Y3Zhd3ByeG1ibG51aWF1aXhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzA0MzgsImV4cCI6MjEwMzg0NjQzOH0.-tyDzGCQ6k1pJ5Kg-UX0rq9K7uQ_PV4FR2_0lgdRvr8);
-
-
-/* =========================================================
-   CONTROL DE VEHÍCULOS
-   ========================================================= */
-
-/* ---------------------------------------------------------
-   CONFIGURACIÓN
-   --------------------------------------------------------- */
-
-const PEOPLE = [
-    "Cristina",
-    "Raúl",
-    "Pau",
-    "Lluc",
-    "Mar"
-];
-
-
-const VEHICLES = {
-
-    C3: {
-        name: "C3",
-        color: "blue",
-        colorClass: "reservation-c3"
-    },
-
-    C4: {
-        name: "C4",
-        color: "grey",
-        colorClass: "reservation-c4"
-    },
-
-    Laguna: {
-        name: "Laguna",
-        color: "dark-green",
-        colorClass: "reservation-laguna"
-    }
-
-};
-
-
-/*
- * Vehículos físicos disponibles.
- *
- * "Any" NO se incluye aquí porque no es un vehículo real.
- * Es solamente una opción para que el sistema elija uno.
- */
-
-const REAL_VEHICLES = [
-    "C3",
-    "C4",
-    "Laguna"
-];
-
-
-const STORAGE_KEY =
-    "llucbafar_vehicle_reservations";
-
-
-/* ---------------------------------------------------------
-   ESTADO
-   --------------------------------------------------------- */
-
-const today = new Date();
-
-let currentMonth =
-    new Date(
-        today.getFullYear(),
-        today.getMonth(),
-        1
-    );
-
-let selectedDate =
-    formatDate(today);
-
-let reservations =
-    loadReservations();
-
-let reservationToDelete =
-    null;
-
-
-/* ---------------------------------------------------------
-   ELEMENTOS DOM
-   --------------------------------------------------------- */
-
-const monthTitle =
-    document.getElementById(
-        "monthTitle"
-    );
-
-
-const calendar =
-    document.getElementById(
-        "calendar"
-    );
-
-
-const selectedDateTitle =
-    document.getElementById(
-        "selectedDateTitle"
-    );
-
-
-const reservationsList =
-    document.getElementById(
-        "reservationsList"
-    );
-
-
-const previousMonthButton =
-    document.getElementById(
-        "previousMonth"
-    );
-
-
-const nextMonthButton =
-    document.getElementById(
-        "nextMonth"
-    );
-
-
-const todayButton =
-    document.getElementById(
-        "todayButton"
-    );
-
-
-const addReservationButton =
-    document.getElementById(
-        "addReservationButton"
-    );
-
-
-const reservationModal =
-    document.getElementById(
-        "reservationModal"
-    );
-
-
-const closeModalButton =
-    document.getElementById(
-        "closeModalButton"
-    );
-
-
-const modalOverlay =
-    document.getElementById(
-        "modalOverlay"
-    );
-
-
-const modalDateTitle =
-    document.getElementById(
-        "modalDateTitle"
-    );
-
-
-const reservationForm =
-    document.getElementById(
-        "reservationForm"
-    );
-
-
-const formError =
-    document.getElementById(
-        "formError"
-    );
-
-
-const deleteModal =
-    document.getElementById(
-        "deleteModal"
-    );
-
-
-const cancelDelete =
-    document.getElementById(
-        "cancelDelete"
-    );
-
-
-const confirmDelete =
-    document.getElementById(
-        "confirmDelete"
-    );
-
-
-/*
- * Nuevo control:
- * Reservar todo el día.
- */
-
-const allDay =
-    document.getElementById(
-        "allDay"
-    );
-
-
-const startTimeInput =
-    document.getElementById(
-        "startTime"
-    );
-
-
-const endTimeInput =
-    document.getElementById(
-        "endTime"
-    );
-
-
-/* ---------------------------------------------------------
-   INICIO
-   --------------------------------------------------------- */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        renderCalendar();
-
-        renderSelectedDay();
-
-    }
-);
-
-
-/* ---------------------------------------------------------
-   CALENDARIO
-   --------------------------------------------------------- */
-
-function renderCalendar() {
-
-    calendar.innerHTML = "";
-
-    const year =
-        currentMonth.getFullYear();
-
-    const month =
-        currentMonth.getMonth();
-
-
-    const monthName =
-        currentMonth.toLocaleDateString(
-            "es-ES",
-            {
-                month: "long",
-                year: "numeric"
-            }
-        );
-
-
-    monthTitle.textContent =
-        capitalize(monthName);
-
-
-    const firstDay =
-        new Date(
-            year,
-            month,
-            1
-        );
-
-
-    /*
-     * JavaScript empieza la semana
-     * en domingo.
-     *
-     * Lo convertimos para que
-     * lunes sea 0.
-     */
-
-    let startingDay =
-        firstDay.getDay();
-
-    startingDay =
-        startingDay === 0
-            ? 6
-            : startingDay - 1;
-
-
-    const daysInMonth =
-        new Date(
-            year,
-            month + 1,
-            0
-        ).getDate();
-
-
-    /* Espacios antes del primer día */
-
-    for (
-        let i = 0;
-        i < startingDay;
-        i++
-    ) {
-
-        const emptyDay =
-            document.createElement(
-                "div"
-            );
-
-        emptyDay.className =
-            "calendar-day empty";
-
-        calendar.appendChild(
-            emptyDay
-        );
-
-    }
-
-
-    /* Días del mes */
-
-    for (
-        let day = 1;
-        day <= daysInMonth;
-        day++
-    ) {
-
-        const date =
-            new Date(
-                year,
-                month,
-                day
-            );
-
-
-        const dateString =
-            formatDate(date);
-
-
-        const button =
-            document.createElement(
-                "button"
-            );
-
-
-        button.className =
-            "calendar-day";
-
-
-        button.textContent =
-            day;
-
-
-        /* Hoy */
-
-        if (
-            dateString ===
-            formatDate(today)
-        ) {
-
-            button.classList.add(
-                "today"
-            );
-
-        }
-
-
-        /* Día seleccionado */
-
-        if (
-            dateString ===
-            selectedDate
-        ) {
-
-            button.classList.add(
-                "selected"
-            );
-
-        }
-
-
-        /*
-         * Obtener los vehículos
-         * reservados ese día.
-         */
-
-        const reservedVehicles =
-            getReservedVehicles(
-                dateString
-            );
-
-
-        reservedVehicles.forEach(
-            vehicle => {
-
-                if (
-                    vehicle === "C3"
-                ) {
-
-                    button.classList.add(
-                        "reserved-c3"
-                    );
-
-                }
-
-
-                if (
-                    vehicle === "C4"
-                ) {
-
-                    button.classList.add(
-                        "reserved-c4"
-                    );
-
-                }
-
-
-                if (
-                    vehicle === "Laguna"
-                ) {
-
-                    button.classList.add(
-                        "reserved-laguna"
-                    );
-
-                }
-
-            }
-        );
-
-
-        /*
-         * Seleccionar día.
-         */
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                selectedDate =
-                    dateString;
-
-                renderCalendar();
-
-                renderSelectedDay();
-
-            }
-        );
-
-
-        calendar.appendChild(
-            button
-        );
-
-    }
-
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ==========================================
+// 2. REFERENCIAS A ELEMENTOS DEL DOM
+// ==========================================
+const monthTitle = document.getElementById('monthTitle');
+const calendar = document.getElementById('calendar');
+const previousMonthBtn = document.getElementById('previousMonth');
+const nextMonthBtn = document.getElementById('nextMonth');
+const todayButton = document.getElementById('todayButton');
+
+const selectedDateTitle = document.getElementById('selectedDateTitle');
+const reservationsList = document.getElementById('reservationsList');
+const addReservationButton = document.getElementById('addReservationButton');
+
+// Modal Reserva
+const reservationModal = document.getElementById('reservationModal');
+const modalOverlay = document.getElementById('modalOverlay');
+const closeModalButton = document.getElementById('closeModalButton');
+const modalDateTitle = document.getElementById('modalDateTitle');
+const reservationForm = document.getElementById('reservationForm');
+const allDayCheckbox = document.getElementById('allDay');
+const startTimeInput = document.getElementById('startTime');
+const endTimeInput = document.getElementById('endTime');
+const formError = document.getElementById('formError');
+
+// Modal Eliminar
+const deleteModal = document.getElementById('deleteModal');
+const cancelDeleteBtn = document.getElementById('cancelDelete');
+const confirmDeleteBtn = document.getElementById('confirmDelete');
+
+// Variables de estado local de la UI
+let currentDate = new Date();
+let selectedDate = new Date();
+let reservationToDeleteId = null;
+
+// ==========================================
+// 3. FUNCIONES DE BASE DE DATOS (SUPABASE)
+// ==========================================
+
+// Cargar reservas de la fecha dada
+async function fetchReservations(dateString) {
+  const { data, error } = await supabaseClient
+    .from('reservas')
+    .select('*')
+    .eq('date', dateString)
+    .order('start_time', { ascending: true });
+
+  if (error) {
+    console.error('Error al obtener reservas:', error.message);
+    return [];
+  }
+  return data;
 }
 
+// Insertar una reserva nueva
+async function saveReservation(reservationData) {
+  const { data, error } = await supabaseClient
+    .from('reservas')
+    .insert([reservationData])
+    .select();
 
-/* ---------------------------------------------------------
-   DÍA SELECCIONADO
-   --------------------------------------------------------- */
-
-function renderSelectedDay() {
-
-    const date =
-        parseDate(
-            selectedDate
-        );
-
-
-    selectedDateTitle.textContent =
-        date.toLocaleDateString(
-            "es-ES",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
-            }
-        );
-
-
-    renderReservations();
-
+  if (error) {
+    console.error('Error al guardar reserva:', error.message);
+    return null;
+  }
+  return data;
 }
 
+// Eliminar una reserva por ID
+async function deleteReservationFromDB(id) {
+  const { error } = await supabaseClient
+    .from('reservas')
+    .delete()
+    .eq('id', id);
 
-/* ---------------------------------------------------------
-   RESERVAS DEL DÍA
-   --------------------------------------------------------- */
-
-function renderReservations() {
-
-    reservationsList.innerHTML =
-        "";
-
-
-    const dayReservations =
-        reservations
-            .filter(
-                reservation =>
-                    reservation.date ===
-                    selectedDate
-            )
-            .sort(
-                (a, b) =>
-                    a.startTime.localeCompare(
-                        b.startTime
-                    )
-            );
-
-
-    if (
-        dayReservations.length === 0
-    ) {
-
-        const empty =
-            document.createElement(
-                "div"
-            );
-
-
-        empty.className =
-            "empty-message";
-
-
-        empty.innerHTML = `
-            No hay reservas para este día.<br>
-            Pulsa <strong>+</strong> para reservar un vehículo.
-        `;
-
-
-        reservationsList.appendChild(
-            empty
-        );
-
-
-        return;
-
-    }
-
-
-    dayReservations.forEach(
-        reservation => {
-
-            const vehicle =
-                VEHICLES[
-                    reservation.vehicle
-                ];
-
-
-            /*
-             * Por seguridad, si existiese
-             * una reserva antigua con un
-             * vehículo desconocido,
-             * no romper la interfaz.
-             */
-
-            if (!vehicle) {
-                return;
-            }
-
-
-            const element =
-                document.createElement(
-                    "div"
-                );
-
-
-            element.className =
-                `reservation ${vehicle.colorClass}`;
-
-
-            element.innerHTML = `
-
-                <div class="vehicle-color"></div>
-
-                <div class="reservation-content">
-
-                    <div class="reservation-top">
-
-                        <span class="reservation-vehicle">
-                            ${escapeHtml(
-                                reservation.vehicle
-                            )}
-                        </span>
-
-                    </div>
-
-
-                    <div class="reservation-person">
-                        ${escapeHtml(
-                            reservation.person
-                        )}
-                    </div>
-
-
-                    <div class="reservation-time">
-                        ${escapeHtml(
-                            reservation.startTime
-                        )}
-                        –
-                        ${escapeHtml(
-                            reservation.endTime
-                        )}
-                    </div>
-
-                </div>
-
-
-                <button
-                    class="delete-reservation"
-                    aria-label="Eliminar reserva"
-                    data-id="${reservation.id}"
-                >
-                    ×
-                </button>
-
-            `;
-
-
-            const deleteButton =
-                element.querySelector(
-                    ".delete-reservation"
-                );
-
-
-            deleteButton.addEventListener(
-                "click",
-                () => {
-
-                    openDeleteModal(
-                        reservation.id
-                    );
-
-                }
-            );
-
-
-            reservationsList.appendChild(
-                element
-            );
-
-        }
-    );
-
+  if (error) {
+    console.error('Error al eliminar reserva:', error.message);
+    return false;
+  }
+  return true;
 }
 
-
-/* ---------------------------------------------------------
-   MODAL NUEVA RESERVA
-   --------------------------------------------------------- */
-
-function openReservationModal() {
-
-    reservationForm.reset();
-
-
-    formError.textContent =
-        "";
-
-
-    /*
-     * Restablecer el modo
-     * "Reservar todo el día".
-     */
-
-    if (allDay) {
-
-        allDay.checked =
-            false;
-
-    }
-
-
-    if (startTimeInput) {
-
-        startTimeInput.disabled =
-            false;
-
-    }
-
-
-    if (endTimeInput) {
-
-        endTimeInput.disabled =
-            false;
-
-    }
-
-
-    modalDateTitle.textContent =
-        parseDate(
-            selectedDate
-        ).toLocaleDateString(
-            "es-ES",
-            {
-                weekday: "long",
-                day: "numeric",
-                month: "long"
-            }
-        );
-
-
-    reservationModal.classList.remove(
-        "hidden"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
-
+// Escuchar cambios en tiempo real
+function setupRealtimeListener() {
+  supabaseClient
+    .channel('public:reservas')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'reservas' },
+      () => {
+        // Al ocurrir un cambio en la BD, refrescamos el día actual
+        renderDayReservations();
+      }
+    )
+    .subscribe();
 }
 
-
-/* ---------------------------------------------------------
-   CERRAR MODAL
-   --------------------------------------------------------- */
-
-function closeReservationModal() {
-
-    reservationModal.classList.add(
-        "hidden"
-    );
-
-
-    document.body.style.overflow =
-        "";
-
-}
-
-
-/* ---------------------------------------------------------
-   RESERVAR TODO EL DÍA
-   --------------------------------------------------------- */
-
-if (allDay) {
-
-    allDay.addEventListener(
-        "change",
-        () => {
-
-            if (
-                allDay.checked
-            ) {
-
-                /*
-                 * Todo el día:
-                 *
-                 * 00:00 hasta 23:59
-                 */
-
-                startTimeInput.value =
-                    "00:00";
-
-                endTimeInput.value =
-                    "23:59";
-
-
-                /*
-                 * Desactivamos los
-                 * campos para evitar
-                 * cambios accidentales.
-                 */
-
-                startTimeInput.disabled =
-                    true;
-
-                endTimeInput.disabled =
-                    true;
-
-            } else {
-
-                /*
-                 * Volver al modo
-                 * horario manual.
-                 */
-
-                startTimeInput.disabled =
-                    false;
-
-                endTimeInput.disabled =
-                    false;
-
-
-                startTimeInput.value =
-                    "";
-
-                endTimeInput.value =
-                    "";
-
-            }
-
-        }
-    );
-
-}
-
-
-/* ---------------------------------------------------------
-   CREAR RESERVA
-   --------------------------------------------------------- */
-
-function createReservation(event) {
-
-    event.preventDefault();
-
-
-    formError.textContent =
-        "";
-
-
-    const person =
-        document.getElementById(
-            "person"
-        ).value;
-
-
-    const vehicleElement =
-        document.querySelector(
-            'input[name="vehicle"]:checked'
-        );
-
-
-    let startTime =
-        startTimeInput.value;
-
-
-    let endTime =
-        endTimeInput.value;
-
-
-    /* -----------------------------------------------------
-       COMPROBACIONES BÁSICAS
-       ----------------------------------------------------- */
-
-    if (
-        !person ||
-        !vehicleElement
-    ) {
-
-        formError.textContent =
-            "Completa todos los campos.";
-
-        return;
-
-    }
-
-
-    /*
-     * Si está activado "Reservar todo
-     * el día", forzamos las horas.
-     */
-
-    if (
-        allDay &&
-        allDay.checked
-    ) {
-
-        startTime =
-            "00:00";
-
-        endTime =
-            "23:59";
-
-    }
-
-
-    /*
-     * Comprobamos que haya horas.
-     */
-
-    if (
-        !startTime ||
-        !endTime
-    ) {
-
-        formError.textContent =
-            "Indica la hora de inicio y la hora de finalización.";
-
-        return;
-
-    }
-
-
-    /*
-     * La hora de finalización debe
-     * ser posterior a la inicial.
-     */
-
-    if (
-        startTime >= endTime
-    ) {
-
-        formError.textContent =
-            "La hora de finalización debe ser posterior a la hora de inicio.";
-
-        return;
-
-    }
-
-
-    /*
-     * Valor seleccionado:
-     *
-     * C3
-     * C4
-     * Laguna
-     * Any
-     */
-
-    const selectedVehicle =
-        vehicleElement.value;
-
-
-    /* -----------------------------------------------------
-       CUALQUIER COCHE
-       ----------------------------------------------------- */
-
-    let vehicle =
-        selectedVehicle;
-
-
-    if (
-        selectedVehicle === "Any"
-    ) {
-
-        /*
-         * Buscar un vehículo libre.
-         *
-         * Se prueban en este orden:
-         *
-         * C3
-         * C4
-         * Laguna
-         */
-
-        const availableVehicle =
-            REAL_VEHICLES.find(
-                possibleVehicle =>
-                    !hasConflict(
-                        possibleVehicle,
-                        startTime,
-                        endTime
-                    )
-            );
-
-
-        /*
-         * Los tres están ocupados.
-         */
-
-        if (
-            !availableVehicle
-        ) {
-
-            formError.textContent =
-                "No hay ningún coche disponible durante ese horario.";
-
-            return;
-
-        }
-
-
-        /*
-         * Convertimos "Any" en el
-         * vehículo real seleccionado.
-         */
-
-        vehicle =
-            availableVehicle;
-
-    }
-
-
-    /* -----------------------------------------------------
-       COMPROBAR CONFLICTO
-       ----------------------------------------------------- */
-
-    const conflict =
-        hasConflict(
-            vehicle,
-            startTime,
-            endTime
-        );
-
-
-    if (conflict) {
-
-        formError.textContent =
-            `El ${vehicle} ya está reservado durante ese horario.`;
-
-        return;
-
-    }
-
-
-    /* -----------------------------------------------------
-       CREAR RESERVA
-       ----------------------------------------------------- */
-
-    const newReservation = {
-
-        id:
-            Date.now().toString(),
-
-        date:
-            selectedDate,
-
-        person:
-            person,
-
-        vehicle:
-            vehicle,
-
-        startTime:
-            startTime,
-
-        endTime:
-            endTime
-
-    };
-
-
-    reservations.push(
-        newReservation
-    );
-
-
-    saveReservations();
-
-
-    closeReservationModal();
-
-
-    renderCalendar();
-
-
-    renderSelectedDay();
-
-}
-
-
-/* ---------------------------------------------------------
-   COMPROBAR CONFLICTO
-   --------------------------------------------------------- */
-
-function hasConflict(
-    vehicle,
-    startTime,
-    endTime
-) {
-
-    return reservations.some(
-        reservation => {
-
-            /*
-             * Solo nos interesan las
-             * reservas del día seleccionado.
-             */
-
-            if (
-                reservation.date !==
-                selectedDate
-            ) {
-
-                return false;
-
-            }
-
-
-            /*
-             * Solo nos interesan las
-             * reservas del mismo vehículo.
-             */
-
-            if (
-                reservation.vehicle !==
-                vehicle
-            ) {
-
-                return false;
-
-            }
-
-
-            /*
-             * Comprobar solapamiento.
-             *
-             * Ejemplo:
-             *
-             * Reserva existente:
-             * 10:00 – 14:00
-             *
-             * Nueva:
-             * 12:00 – 16:00
-             *
-             * Hay conflicto.
-             */
-
-            return (
-                startTime <
-                reservation.endTime
-            ) &&
-            (
-                endTime >
-                reservation.startTime
-            );
-
-        }
-    );
-
-}
-
-
-/* ---------------------------------------------------------
-   ELIMINAR RESERVA
-   --------------------------------------------------------- */
-
-function openDeleteModal(id) {
-
-    reservationToDelete =
-        id;
-
-
-    deleteModal.classList.remove(
-        "hidden"
-    );
-
-
-    document.body.style.overflow =
-        "hidden";
-
-}
-
-
-function closeDeleteModal() {
-
-    deleteModal.classList.add(
-        "hidden"
-    );
-
-
-    reservationToDelete =
-        null;
-
-
-    document.body.style.overflow =
-        "";
-
-}
-
-
-function deleteReservation() {
-
-    if (
-        !reservationToDelete
-    ) {
-
-        return;
-
-    }
-
-
-    reservations =
-        reservations.filter(
-            reservation =>
-                reservation.id !==
-                reservationToDelete
-        );
-
-
-    saveReservations();
-
-
-    closeDeleteModal();
-
-
-    renderCalendar();
-
-
-    renderSelectedDay();
-
-}
-
-
-/* ---------------------------------------------------------
-   NAVEGACIÓN DEL CALENDARIO
-   --------------------------------------------------------- */
-
-previousMonthButton.addEventListener(
-    "click",
-    () => {
-
-        currentMonth =
-            new Date(
-                currentMonth.getFullYear(),
-                currentMonth.getMonth() - 1,
-                1
-            );
-
-
-        renderCalendar();
-
-    }
-);
-
-
-nextMonthButton.addEventListener(
-    "click",
-    () => {
-
-        currentMonth =
-            new Date(
-                currentMonth.getFullYear(),
-                currentMonth.getMonth() + 1,
-                1
-            );
-
-
-        renderCalendar();
-
-    }
-);
-
-
-todayButton.addEventListener(
-    "click",
-    () => {
-
-        currentMonth =
-            new Date(
-                today.getFullYear(),
-                today.getMonth(),
-                1
-            );
-
-
-        selectedDate =
-            formatDate(today);
-
-
-        renderCalendar();
-
-
-        renderSelectedDay();
-
-    }
-);
-
-
-/* ---------------------------------------------------------
-   BOTONES DEL MODAL
-   --------------------------------------------------------- */
-
-addReservationButton.addEventListener(
-    "click",
-    openReservationModal
-);
-
-
-closeModalButton.addEventListener(
-    "click",
-    closeReservationModal
-);
-
-
-modalOverlay.addEventListener(
-    "click",
-    closeReservationModal
-);
-
-
-reservationForm.addEventListener(
-    "submit",
-    createReservation
-);
-
-
-cancelDelete.addEventListener(
-    "click",
-    closeDeleteModal
-);
-
-
-confirmDelete.addEventListener(
-    "click",
-    deleteReservation
-);
-
-
-/* ---------------------------------------------------------
-   TECLA ESC
-   --------------------------------------------------------- */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            event.key !==
-            "Escape"
-        ) {
-
-            return;
-
-        }
-
-
-        closeReservationModal();
-
-
-        closeDeleteModal();
-
-    }
-);
-
-
-/* ---------------------------------------------------------
-   LOCAL STORAGE
-   --------------------------------------------------------- */
-
-function loadReservations() {
-
-    try {
-
-        const saved =
-            localStorage.getItem(
-                STORAGE_KEY
-            );
-
-
-        if (!saved) {
-
-            return [];
-
-        }
-
-
-        const parsed =
-            JSON.parse(
-                saved
-            );
-
-
-        return Array.isArray(
-            parsed
-        )
-            ? parsed
-            : [];
-
-
-    } catch (error) {
-
-        console.error(
-            "Error cargando reservas:",
-            error
-        );
-
-
-        return [];
-
-    }
-
-}
-
-
-function saveReservations() {
-
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(
-            reservations
-        )
-    );
-
-}
-
-
-/* ---------------------------------------------------------
-   UTILIDADES
-   --------------------------------------------------------- */
+// ==========================================
+// 4. LÓGICA DE LA INTERFAZ (UI) Y CALENDARIO
+// ==========================================
 
 function formatDate(date) {
-
-    const year =
-        date.getFullYear();
-
-
-    const month =
-        String(
-            date.getMonth() + 1
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    const day =
-        String(
-            date.getDate()
-        ).padStart(
-            2,
-            "0"
-        );
-
-
-    return `${year}-${month}-${day}`;
-
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
 }
 
-
-function parseDate(
-    dateString
-) {
-
-    const [
-        year,
-        month,
-        day
-    ] =
-        dateString
-            .split("-")
-            .map(Number);
-
-
-    return new Date(
-        year,
-        month - 1,
-        day
-    );
-
+function formatPrettyDate(date) {
+  const options = { weekday: 'long', day: 'numeric', month: 'long' };
+  const str = date.toLocaleDateString('es-ES', options);
+  return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Renderizar el calendario de un mes
+function renderCalendar() {
+  const year = currentDate.getFullYear();
+  const month = currentDate.getMonth();
 
-/* ---------------------------------------------------------
-   VEHÍCULOS RESERVADOS EN UN DÍA
-   --------------------------------------------------------- */
+  const monthNames = [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+    'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ];
+  monthTitle.textContent = `${monthNames[month]} ${year}`;
 
-function getReservedVehicles(
-    dateString
-) {
+  calendar.innerHTML = '';
 
-    return [
-        ...new Set(
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
 
-            reservations
-                .filter(
-                    reservation =>
-                        reservation.date ===
-                        dateString
-                )
-                .map(
-                    reservation =>
-                        reservation.vehicle
-                )
+  // Ajustar primer día de la semana (Lunes = 0)
+  let startingDay = firstDay.getDay() - 1;
+  if (startingDay === -1) startingDay = 6;
 
-        )
-    ];
+  // Huecos vacíos antes del día 1
+  for (let i = 0; i < startingDay; i++) {
+    const emptyCell = document.createElement('div');
+    emptyCell.classList.add('calendar-day', 'empty');
+    calendar.appendChild(emptyCell);
+  }
 
+  const today = new Date();
+
+  // Días del mes
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+    const dayCell = document.createElement('div');
+    dayCell.classList.add('calendar-day');
+    dayCell.textContent = day;
+
+    const thisDate = new Date(year, month, day);
+
+    if (thisDate.toDateString() === today.toDateString()) {
+      dayCell.classList.add('today');
+    }
+    if (thisDate.toDateString() === selectedDate.toDateString()) {
+      dayCell.classList.add('selected');
+    }
+
+    dayCell.addEventListener('click', () => {
+      selectedDate = thisDate;
+      renderCalendar();
+      renderDayReservations();
+    });
+
+    calendar.appendChild(dayCell);
+  }
 }
 
+// Renderizar las reservas del día seleccionado cargando desde Supabase
+async function renderDayReservations() {
+  selectedDateTitle.textContent = formatPrettyDate(selectedDate);
+  reservationsList.innerHTML = '<p class="loading">Cargando reservas...</p>';
 
-/* ---------------------------------------------------------
-   CAPITALIZAR
-   --------------------------------------------------------- */
+  const dateStr = formatDate(selectedDate);
+  const reservations = await fetchReservations(dateStr);
 
-function capitalize(text) {
+  reservationsList.innerHTML = '';
 
-    return (
-        text.charAt(0).toUpperCase()
-        +
-        text.slice(1)
-    );
+  if (reservations.length === 0) {
+    reservationsList.innerHTML = '<p class="no-reservations">No hay reservas para este día.</p>';
+    return;
+  }
 
+  reservations.forEach(res => {
+    const card = document.createElement('div');
+    card.classList.add('reservation-card', `vehicle-${res.vehicle.toLowerCase()}`);
+
+    const timeText = res.all_day ? 'Todo el día (00:00 – 23:59)' : `${res.start_time.slice(0,5)} – ${res.end_time.slice(0,5)}`;
+
+    card.innerHTML = `
+      <div class="reservation-info">
+        <h3>${res.person}</h3>
+        <p><strong>${res.vehicle}</strong> • ${timeText}</p>
+      </div>
+      <button class="delete-btn" aria-label="Eliminar reserva">&times;</button>
+    `;
+
+    card.querySelector('.delete-btn').addEventListener('click', () => {
+      reservationToDeleteId = res.id;
+      deleteModal.classList.remove('hidden');
+    });
+
+    reservationsList.appendChild(card);
+  });
 }
 
+// ==========================================
+// 5. GESTIÓN DE MODALES Y FORMULARIOS
+// ==========================================
 
-/* ---------------------------------------------------------
-   SEGURIDAD HTML
-   --------------------------------------------------------- */
-
-function escapeHtml(text) {
-
-    const div =
-        document.createElement(
-            "div"
-        );
-
-
-    div.textContent =
-        text;
-
-
-    return div.innerHTML;
-
+function openModal() {
+  modalDateTitle.textContent = formatPrettyDate(selectedDate);
+  formError.textContent = '';
+  reservationForm.reset();
+  reservationModal.classList.remove('hidden');
 }
+
+function closeModal() {
+  reservationModal.classList.add('hidden');
+}
+
+allDayCheckbox.addEventListener('change', (e) => {
+  if (e.target.checked) {
+    startTimeInput.value = '00:00';
+    endTimeInput.value = '23:59';
+    startTimeInput.disabled = true;
+    endTimeInput.disabled = true;
+  } else {
+    startTimeInput.disabled = false;
+    endTimeInput.disabled = false;
+  }
+});
+
+// Guardar reserva desde el formulario
+reservationForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+
+  const person = document.getElementById('person').value;
+  const vehicleRadio = document.querySelector('input[name="vehicle"]:checked');
+  const allDay = allDayCheckbox.checked;
+  const startTime = startTimeInput.value;
+  const endTime = endTimeInput.value;
+
+  if (!person || !vehicleRadio) {
+    formError.textContent = 'Por favor, completa todos los campos.';
+    return;
+  }
+
+  if (!allDay && startTime >= endTime) {
+    formError.textContent = 'La hora de inicio debe ser anterior a la de fin.';
+    return;
+  }
+
+  const newReservation = {
+    person,
+    vehicle: vehicleRadio.value,
+    date: formatDate(selectedDate),
+    start_time: startTime,
+    end_time: endTime,
+    all_day: allDay
+  };
+
+  const savedData = await saveReservation(newReservation);
+
+  if (savedData) {
+    closeModal();
+    renderDayReservations();
+  } else {
+    formError.textContent = 'Hubo un error al guardar en el servidor.';
+  }
+});
+
+// Eliminar reserva confirmada
+confirmDeleteBtn.addEventListener('click', async () => {
+  if (reservationToDeleteId !== null) {
+    const deleted = await deleteReservationFromDB(reservationToDeleteId);
+    if (deleted) {
+      reservationToDeleteId = null;
+      deleteModal.classList.add('hidden');
+      renderDayReservations();
+    }
+  }
+});
+
+cancelDeleteBtn.addEventListener('click', () => {
+  reservationToDeleteId = null;
+  deleteModal.classList.add('hidden');
+});
+
+// NAVEGACIÓN DE MESES Y BOTÓN HOY
+previousMonthBtn.addEventListener('click', () => {
+  currentDate.setMonth(currentDate.getMonth() - 1);
+  renderCalendar();
+});
+
+nextMonthBtn.addEventListener('click', () => {
+  currentDate.setMonth(currentDate.getMonth() + 1);
+  renderCalendar();
+});
+
+todayButton.addEventListener('click', () => {
+  currentDate = new Date();
+  selectedDate = new Date();
+  renderCalendar();
+  renderDayReservations();
+});
+
+addReservationButton.addEventListener('click', openModal);
+closeModalButton.addEventListener('click', closeModal);
+modalOverlay.addEventListener('click', closeModal);
+
+// ==========================================
+// 6. INICIALIZACIÓN AL CARGAR LA PÁGINA
+// ==========================================
+document.addEventListener('DOMContentLoaded', () => {
+  renderCalendar();
+  renderDayReservations();
+  setupRealtimeListener();
+});
