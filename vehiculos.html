@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Control de vehículos</title>
+
+    <link rel="stylesheet" href="css/vehiculos.css">
+</head>
+
+<body>
+
+    <main class="vehicles-app">
+
+        <!-- CABECERA -->
+        <header class="app-header">
+            <a href="index.html" class="back-button" aria-label="Volver">
+                ←
+            </a>
+
+            <div>
+                <h1>Control de vehículos</h1>
+                <p>Reservas familiares</p>
+            </div>
+        </header>
+
+
+        <!-- CALENDARIO -->
+        <section class="calendar-card">
+
+            <div class="calendar-header">
+                <button id="previousMonth" class="month-button" aria-label="Mes anterior">
+                    ‹
+                </button>
+
+                <h2 id="monthTitle"></h2>
+
+                <button id="nextMonth" class="month-button" aria-label="Mes siguiente">
+                    ›
+                </button>
+            </div>
+
+            <div class="weekdays">
+                <span>L</span>
+                <span>M</span>
+                <span>X</span>
+                <span>J</span>
+                <span>V</span>
+                <span>S</span>
+                <span>D</span>
+            </div>
+
+            <div id="calendar" class="calendar-grid"></div>
+
+            <button id="todayButton" class="today-button">
+                Ir a hoy
+            </button>
+
+        </section>
+
+
+        <!-- RESERVAS DEL DÍA -->
+        <section class="day-section">
+
+            <div class="section-title">
+                <div>
+                    <span class="section-label">RESERVAS</span>
+                    <h2 id="selectedDateTitle"></h2>
+                </div>
+
+                <button id="addReservationButton" class="add-button">
+                    +
+                </button>
+            </div>
+
+            <div id="reservationsList" class="reservations-list"></div>
+
+        </section>
+
+    </main>
+
+
+    <!-- MODAL NUEVA RESERVA -->
+    <div id="reservationModal" class="modal hidden">
+
+        <div class="modal-overlay" id="modalOverlay"></div>
+
+        <div class="modal-content">
+
+            <div class="modal-header">
+                <div>
+                    <span class="section-label">NUEVA RESERVA</span>
+                    <h2 id="modalDateTitle"></h2>
+                </div>
+
+                <button id="closeModalButton" class="close-button">
+                    ×
+                </button>
+            </div>
+
+
+            <form id="reservationForm">
+
+                <!-- PERSONA -->
+                <div class="form-group">
+                    <label for="person">¿Quién?</label>
+
+                    <select id="person" required>
+                        <option value="">Selecciona una persona</option>
+                        <option value="Cristina">Cristina</option>
+                        <option value="Raúl">Raúl</option>
+                        <option value="Pau">Pau</option>
+                        <option value="Lluc">Lluc</option>
+                        <option value="Mar">Mar</option>
+                    </select>
+                </div>
+
+
+                <!-- VEHÍCULO -->
+                <div class="form-group">
+                    <label>¿Qué vehículo?</label>
+
+                    <div class="vehicle-options">
+
+                        <label class="vehicle-option vehicle-c3">
+                            <input type="radio" name="vehicle" value="C3" required>
+                            <span class="vehicle-radio"></span>
+
+                            <span class="vehicle-info">
+                                <strong>C3</strong>
+                                <small>Azul</small>
+                            </span>
+                        </label>
+
+
+                        <label class="vehicle-option vehicle-c4">
+                            <input type="radio" name="vehicle" value="C4">
+                            <span class="vehicle-radio"></span>
+
+                            <span class="vehicle-info">
+                                <strong>C4</strong>
+                                <small>Gris</small>
+                            </span>
+                        </label>
+
+
+                        <label class="vehicle-option vehicle-laguna">
+                            <input type="radio" name="vehicle" value="Laguna">
+                            <span class="vehicle-radio"></span>
+
+                            <span class="vehicle-info">
+                                <strong>Laguna</strong>
+                                <small>Verde oscuro</small>
+                            </span>
+                        </label>
+
+                    </div>
+                </div>
+
+
+                <!-- HORARIOS -->
+                <div class="time-row">
+
+                    <div class="form-group">
+                        <label for="startTime">Desde</label>
+                        <input type="time" id="startTime" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="endTime">Hasta</label>
+                        <input type="time" id="endTime" required>
+                    </div>
+
+                </div>
+
+
+                <p id="formError" class="form-error"></p>
+
+                <button type="submit" class="submit-button">
+                    Reservar vehículo
+                </button>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- MODAL CONFIRMACIÓN / ELIMINACIÓN -->
+    <div id="deleteModal" class="modal hidden">
+
+        <div class="modal-overlay"></div>
+
+        <div class="confirm-content">
+
+            <h2>Eliminar reserva</h2>
+
+            <p>
+                ¿Quieres eliminar esta reserva?
+            </p>
+
+            <div class="confirm-buttons">
+                <button id="cancelDelete" class="secondary-button">
+                    Cancelar
+                </button>
+
+                <button id="confirmDelete" class="delete-button">
+                    Eliminar
+                </button>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <script src="js/vehiculos.js"></script>
+
+</body>
+</html>
