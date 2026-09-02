@@ -1,0 +1,236 @@
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #f4f4f4;
+}
+
+.mapa-app {
+    width: 100%;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.mapa-header {
+    min-height: 70px;
+    padding: 12px 14px;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
+    z-index: 1000;
+}
+
+.mapa-header h1 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.mapa-header p {
+    margin: 4px 0 0;
+    font-size: 12px;
+    color: #777;
+}
+
+.btn-volver {
+    text-decoration: none;
+    color: white;
+    background: #333;
+    padding: 9px 12px;
+    border-radius: 9px;
+    font-size: 13px;
+    white-space: nowrap;
+}
+
+.controles {
+    background: white;
+    padding: 10px 12px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+    z-index: 900;
+}
+
+.selector-titulo {
+    font-size: 12px;
+    font-weight: bold;
+    color: #777;
+    margin-bottom: 7px;
+    text-transform: uppercase;
+}
+
+.coches-selector {
+    display: flex;
+    gap: 7px;
+}
+
+.coche-btn {
+    flex: 1;
+    border: 2px solid #ddd;
+    background: white;
+    border-radius: 10px;
+    padding: 10px 5px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 7px;
+}
+
+.coche-btn.activo {
+    border-color: #222;
+    background: #f1f1f1;
+}
+
+.coche-punto {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    display: inline-block;
+    border: 2px solid white;
+    box-shadow: 0 0 0 1px #777;
+}
+
+.coche-punto.c3 {
+    background: #1677ff;
+}
+
+.coche-punto.c4 {
+    background: #777;
+}
+
+.coche-punto.laguna {
+    background: #176b3a;
+}
+
+.estado {
+    margin-top: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+#map {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    z-index: 1;
+}
+
+.mensaje {
+    position: fixed;
+    left: 50%;
+    bottom: 20px;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.82);
+    color: white;
+    padding: 10px 15px;
+    border-radius: 10px;
+    font-size: 13px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+    z-index: 2000;
+    white-space: nowrap;
+}
+
+.mensaje.visible {
+    opacity: 1;
+}
+
+.pin-coche {
+    width: 32px;
+    height: 42px;
+    position: relative;
+}
+
+.pin-coche::before {
+    content: "";
+    position: absolute;
+    width: 28px;
+    height: 28px;
+    left: 2px;
+    top: 0;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    border: 3px solid white;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+}
+
+.pin-coche::after {
+    content: "";
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    left: 11px;
+    top: 9px;
+    border-radius: 50%;
+    background: white;
+    z-index: 2;
+}
+
+.pin-c3::before {
+    background: #1677ff;
+}
+
+.pin-c4::before {
+    background: #777;
+}
+
+.pin-laguna::before {
+    background: #176b3a;
+}
+
+.leaflet-popup-content {
+    margin: 12px;
+}
+
+.popup-coche {
+    text-align: center;
+}
+
+.popup-coche strong {
+    font-size: 17px;
+}
+
+.popup-fecha {
+    margin-top: 5px;
+    color: #777;
+    font-size: 11px;
+}
+
+.popup-mover {
+    margin-top: 9px;
+    font-size: 12px;
+    color: #555;
+}
+
+@media (min-width: 700px) {
+
+    .mapa-header {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .controles {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+
+    .coches-selector {
+        max-width: 500px;
+    }
+}

@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <title>Mapa de coches</title>
+
+    <link rel="stylesheet" href="css/mapa.css">
+
+    <!-- Leaflet -->
+    <link
+        rel="stylesheet"
+        href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIINfQ3gV2Z9Y4l8QY0Q8QkY8J8Q8Q8Q8Q8="
+        crossorigin=""
+    />
+</head>
+
+<body>
+
+    <div class="mapa-app">
+
+        <header class="mapa-header">
+            <div>
+                <h1>Mapa de coches</h1>
+                <p>Toca el mapa para colocar un coche</p>
+            </div>
+
+            <a href="vehiculos.html" class="btn-volver">Vehículos</a>
+        </header>
+
+        <section class="controles">
+
+            <div class="selector-titulo">
+                Selecciona el coche
+            </div>
+
+            <div class="coches-selector">
+
+                <button class="coche-btn activo" data-coche="C3">
+                    <span class="coche-punto c3"></span>
+                    C3
+                </button>
+
+                <button class="coche-btn" data-coche="C4">
+                    <span class="coche-punto c4"></span>
+                    C4
+                </button>
+
+                <button class="coche-btn" data-coche="Laguna">
+                    <span class="coche-punto laguna"></span>
+                    Laguna
+                </button>
+
+            </div>
+
+            <div id="estado" class="estado">
+                Coche seleccionado: <strong>C3</strong>
+            </div>
+
+        </section>
+
+        <main id="map"></main>
+
+        <div id="mensaje" class="mensaje"></div>
+
+    </div>
+
+    <!-- Leaflet -->
+    <script
+        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+        crossorigin="">
+    </script>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <script src="js/mapa.js"></script>
+
+</body>
+</html>
