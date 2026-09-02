@@ -1,54 +1,81 @@
-/* ============================================================
+/* 
+const SUPABASE_URL = 'https://wtcvawprxmblnuiauixp.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0Y3Zhd3ByeG1ibG51aWF1aXhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzA0MzgsImV4cCI6MjEwMzg0NjQzOH0.-tyDzGCQ6k1pJ5Kg-UX0rq9K7uQ_PV4FR2_0lgdRvr8';
+
+*/
+
+/* =========================================================
    CONFIGURACIÓN SUPABASE
-   ============================================================ */
+   ========================================================= */
 
 const SUPABASE_URL = 'https://wtcvawprxmblnuiauixp.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind0Y3Zhd3ByeG1ibG51aWF1aXhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODgyNzA0MzgsImV4cCI6MjEwMzg0NjQzOH0.-tyDzGCQ6k1pJ5Kg-UX0rq9K7uQ_PV4FR2_0lgdRvr8';
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-);
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
 
 
-/* ============================================================
-   CONFIGURACIÓN DE COCHES
-   ============================================================ */
+/* =========================================================
+   COCHES
+   ========================================================= */
 
 const COCHES = {
+
     C3: {
         nombre: "C3",
-        clase: "c3"
+        color: "Azul",
+        clase: "c3",
+        ultimaVezActualizado: null
     },
 
     C4: {
         nombre: "C4",
-        clase: "c4"
+        color: "Gris",
+        clase: "c4",
+        ultimaVezActualizado: null
     },
 
     Laguna: {
         nombre: "Laguna",
-        clase: "laguna"
+        color: "Verde",
+        clase: "laguna",
+        ultimaVezActualizado: null
+    },
+
+    Vacio: {
+        nombre: "Vacio",
+        color: "Verde",
+        clase: "vacio",
+        ultimaVezActualizado: null
     }
+
 };
 
 
-/* ============================================================
+/* =========================================================
    VARIABLES
-   ============================================================ */
+   ========================================================= */
 
-let mapa;
-let cocheSeleccionado = "C3";
+let mapa = null;
+
+let cocheSeleccionado = "Vacio";
+
 let marcadores = {};
 
-let mensajeTimeout;
+let mensajeTimeout = null;
 
 
-/* ============================================================
+/* =========================================================
    INICIO
-   ============================================================ */
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", iniciar);
+document.addEventListener(
+    "DOMContentLoaded",
+    iniciar
+);
 
 
 async function iniciar() {
@@ -57,319 +84,570 @@ async function iniciar() {
 
     configurarBotones();
 
+    configurarBotonUbicacion();
+
     await cargarCoches();
 
-    escucharCambios();
+    activarRealtime();
+
 }
 
 
-/* ============================================================
-   MAPA
-   ============================================================ */
+/* =========================================================
+   CREAR MAPA
+   ========================================================= */
 
 function iniciarMapa() {
 
-    mapa = L.map("map");
+    mapa = L.map("map", {
+
+        zoomControl: true,
+
+        attributionControl: true
+
+    });
+
 
     L.tileLayer(
         "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         {
-            maxZoom: 20,
-            attribution: '&copy; OpenStreetMap contributors'
-        }
-    ).addTo(mapa);
 
-    intentarUbicacionUsuario();
+            maxZoom: 20,
+
+            minZoom: 3,
+
+            attribution:
+                '&copy; OpenStreetMap contributors'
+
+        }
+    ).addTo(mapa)
+
+    mapa.setView(
+        [39.889, -0.084], /* Pos Inicial Burriana*/
+        14
+    );
+
+
+    mapa.on(
+        "click",
+        gestionarClickMapa
+    );
+
+    localizarUsuario(false);
 }
 
 
-/* ============================================================
-   LOCALIZACIÓN INICIAL
-   ============================================================ */
+/* =========================================================
+   CLIC EN MAPA
+   ========================================================= */
 
-function intentarUbicacionUsuario() {
+async function gestionarClickMapa(event) {
 
-    if (!navigator.geolocation) {
+    const lat =
+        event.latlng.lat;
 
-        mapa.setView([39.95, -0.07], 12);
+    const lng =
+        event.latlng.lng;
 
-        return;
-    }
 
-    navigator.geolocation.getCurrentPosition(
-
-        posicion => {
-
-            const lat = posicion.coords.latitude;
-            const lng = posicion.coords.longitude;
-
-            mapa.setView([lat, lng], 16);
-        },
-
-        () => {
-
-            mapa.setView([39.95, -0.07], 12);
-        },
-
-        {
-            enableHighAccuracy: true,
-            timeout: 8000,
-            maximumAge: 60000
-        }
+    await guardarPosicion(
+        cocheSeleccionado,
+        lat,
+        lng
     );
 }
 
 
-/* ============================================================
+/* =========================================================
    BOTONES DE COCHES
-   ============================================================ */
+   ========================================================= */
 
 function configurarBotones() {
 
-    const botones = document.querySelectorAll(".coche-btn");
+    const botones =
+        document.querySelectorAll(
+            ".coche-btn"
+        );
+
 
     botones.forEach(boton => {
 
-        boton.addEventListener("click", () => {
+        boton.addEventListener(
+            "click",
+            () => {
 
-            cocheSeleccionado = boton.dataset.coche;
+                cocheSeleccionado =
+                    boton.dataset.coche;
 
-            botones.forEach(b => {
-                b.classList.remove("activo");
-            });
 
-            boton.classList.add("activo");
+                botones.forEach(
+                    otro => {
 
-            document.getElementById("estado").innerHTML =
-                `Coche seleccionado: <strong>${cocheSeleccionado}</strong>`;
-        });
+                        otro.classList.remove(
+                            "activo"
+                        );
+
+                    }
+                );
+
+
+                boton.classList.add(
+                    "activo"
+                );
+
+
+                actualizarEstado();
+
+            }
+        );
+
     });
+
+
+    actualizarEstado();
 }
 
 
-/* ============================================================
-   CARGAR POSICIONES
-   ============================================================ */
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+function actualizarEstado() {
+
+    const texto =
+        document.getElementById(
+            "estadoTexto"
+        );
+
+
+    const coche =
+        COCHES[cocheSeleccionado];
+
+
+    texto.textContent =
+        `${coche.nombre} seleccionado · toca el mapa para colocarlo`;
+}
+
+
+/* =========================================================
+   CARGAR COCHES
+   ========================================================= */
 
 async function cargarCoches() {
 
-    const { data, error } = await supabaseClient
+    const {
+        data,
+        error
+    } = await supabaseClient
+
         .from("ubicaciones_coches")
+
         .select("*");
+
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Error cargando coches:",
+            error
+        );
+
 
         mostrarMensaje(
             "No se han podido cargar las posiciones"
         );
 
+
         return;
     }
 
-    data.forEach(ubicacion => {
 
-        colocarMarcador(ubicacion);
-    });
+    data.forEach(
+        colocarMarcador
+    );
+
+
+    /*
+       Si hay coches guardados,
+       encuadrarlos todos.
+    */
+
+    ajustarMapaACoches();
 }
 
 
-/* ============================================================
-   COLOCAR / ACTUALIZAR MARCADOR
-   ============================================================ */
+/* =========================================================
+   GUARDAR POSICIÓN
+   ========================================================= */
 
-function colocarMarcador(ubicacion) {
+async function guardarPosicion(
+    coche,
+    lat,
+    lng
+) {
 
-    const coche = COCHES[ubicacion.coche];
+    const {
+
+        data,
+
+        error
+
+    } = await supabaseClient
+
+        .from("ubicaciones_coches")
+
+        .upsert(
+
+            {
+
+                coche: coche,
+
+                lat: lat,
+
+                lng: lng,
+
+                updated_at:
+                    new Date().toISOString()
+
+            },
+
+            {
+
+                onConflict: "coche"
+
+            }
+
+        )
+
+        .select()
+
+        .single();
+
+
+    if (error) {
+
+        console.error(
+            "Error guardando posición:",
+            error
+        );
+
+
+        mostrarMensaje(
+            "No se ha podido guardar la posición"
+        );
+
+
+        return;
+    }
+
+
+    colocarMarcador(data);
+
+
+    mostrarMensaje(
+        `${coche} colocado correctamente`
+    );
+}
+
+
+/* =========================================================
+   CREAR MARCADOR
+   ========================================================= */
+
+function colocarMarcador(
+    ubicacion
+) {
+
+    const coche =
+        COCHES[ubicacion.coche];
+
 
     if (!coche) {
         return;
     }
 
-    if (marcadores[ubicacion.coche]) {
+    if (
+        marcadores[
+            ubicacion.coche
+        ]
+    ) {
 
-        marcadores[ubicacion.coche].setLatLng([
+        const marcador =
+            marcadores[
+                ubicacion.coche
+            ];
+
+
+        marcador.setLatLng([
+
             ubicacion.lat,
+
             ubicacion.lng
+
         ]);
 
+
         actualizarPopup(
-            marcadores[ubicacion.coche],
+            marcador,
             ubicacion
         );
+
 
         return;
     }
 
-    const icono = L.divIcon({
+    const icono =
+        crearIconoCoche(
+            coche
+        );
 
-        className: "",
 
-        html: `
-            <div class="pin-coche pin-${coche.clase}"></div>
-        `,
+    const marcador =
+        L.marker(
 
-        iconSize: [32, 42],
+            [
+                ubicacion.lat,
+                ubicacion.lng
+            ],
 
-        iconAnchor: [16, 42],
+            {
 
-        popupAnchor: [0, -40]
-    });
+                icon: icono,
 
-    const marcador = L.marker(
-        [ubicacion.lat, ubicacion.lng],
-        {
-            icon: icono,
-            draggable: true
-        }
-    );
+                draggable: true,
+
+                autoPan: true
+
+            }
+
+        );
+
 
     marcador.addTo(mapa);
 
-    actualizarPopup(marcador, ubicacion);
 
-    marcador.on("dragend", async event => {
+    actualizarPopup(
+        marcador,
+        ubicacion
+    );
 
-        const posicion = event.target.getLatLng();
 
-        await actualizarPosicion(
-            ubicacion.coche,
-            posicion.lat,
-            posicion.lng
-        );
-    });
+    /*ARRRASTRAR MARCADOR*/
 
-    marcadores[ubicacion.coche] = marcador;
+    marcador.on(
+        "dragend",
+        async event => {
+
+            const posicion =
+                event.target.getLatLng();
+
+
+            await actualizarPosicion(
+
+                ubicacion.coche,
+
+                posicion.lat,
+
+                posicion.lng
+
+            );
+
+        }
+    );
+
+
+    marcadores[
+        ubicacion.coche
+    ] = marcador;
 }
 
 
-/* ============================================================
-   POPUP
-   ============================================================ */
+/* =========================================================
+   ICONO
+   ========================================================= */
 
-function actualizarPopup(marcador, ubicacion) {
+function crearIconoCoche(
+    coche
+) {
 
-    const fecha = ubicacion.updated_at
-        ? new Date(ubicacion.updated_at).toLocaleString("es-ES")
-        : "Sin información";
+    return L.divIcon({
 
-    marcador.bindPopup(`
-        <div class="popup-coche">
+        className:
+            "icono-coche-wrapper",
 
-            <strong>${ubicacion.coche}</strong>
+        html: `
 
-            <div class="popup-fecha">
-                Actualizado:<br>
-                ${fecha}
+            <div
+                class="
+                    coche-marker
+                    marker-${coche.clase}
+                "
+            >
+
+                <div
+                    class="
+                        coche-marker-inner
+                    "
+                >
+                    ${coche.nombre}
+                </div>
+
             </div>
 
-            <div class="popup-mover">
-                Puedes mantener pulsada la chincheta
-                y moverla.
+        `,
+
+        iconSize: [
+            46,
+            46
+        ],
+
+        iconAnchor: [
+            10,
+            42
+        ],
+
+        popupAnchor: [
+            13,
+            -39
+        ]
+
+    });
+}
+
+
+/* =========================================================
+   POPUP
+   ========================================================= */
+
+function actualizarPopup(
+    marcador,
+    ubicacion
+) {
+
+    const coche =
+        COCHES[
+            ubicacion.coche
+        ];
+
+
+    const fecha =
+        ubicacion.updated_at
+
+            ? new Date(
+                ubicacion.updated_at
+            ).toLocaleString(
+                "es-ES",
+                {
+
+                    day: "2-digit",
+
+                    month: "2-digit",
+
+                    hour: "2-digit",
+
+                    minute: "2-digit"
+
+                }
+            )
+
+            : "Sin información";
+
+
+    marcador.bindPopup(`
+
+        <div class="popup">
+
+            <div class="popup-nombre">
+                ${coche.nombre}
+            </div>
+
+            <div class="popup-info">
+                ${coche.color}
+                <br>
+                Actualizado: ${fecha}
+            </div>
+
+            <div class="popup-ayuda">
+                Puedes arrastrar la chincheta
+                para cambiar su ubicación.
             </div>
 
         </div>
+
     `);
 }
 
 
-/* ============================================================
-   CLIC EN EL MAPA
-   ============================================================ */
+/* =========================================================
+   ACTUALIZAR POSICIÓN
+   ========================================================= */
 
-mapaClickListener();
+async function actualizarPosicion(
+    coche,
+    lat,
+    lng
+) {
 
+    const {
 
-function mapaClickListener() {
+        data,
 
-    mapa.on("click", async event => {
+        error
 
-        const lat = event.latlng.lat;
-        const lng = event.latlng.lng;
+    } = await supabaseClient
 
-        await guardarPosicion(
-            cocheSeleccionado,
-            lat,
-            lng
-        );
-    });
-}
-
-
-/* ============================================================
-   GUARDAR POSICIÓN
-   ============================================================ */
-
-async function guardarPosicion(coche, lat, lng) {
-
-    const { data, error } = await supabaseClient
         .from("ubicaciones_coches")
-        .upsert(
-            {
-                coche: coche,
-                lat: lat,
-                lng: lng,
-                updated_at: new Date().toISOString()
-            },
-            {
-                onConflict: "coche"
-            }
-        )
-        .select()
-        .single();
 
-    if (error) {
-
-        console.error(error);
-
-        mostrarMensaje(
-            "Error al guardar la posición"
-        );
-
-        return;
-    }
-
-    colocarMarcador(data);
-
-    mostrarMensaje(
-        `${coche} colocado en el mapa`
-    );
-}
-
-
-/* ============================================================
-   MOVER POSICIÓN
-   ============================================================ */
-
-async function actualizarPosicion(coche, lat, lng) {
-
-    const { data, error } = await supabaseClient
-        .from("ubicaciones_coches")
         .update({
+
             lat: lat,
+
             lng: lng,
-            updated_at: new Date().toISOString()
+
+            updated_at:
+                new Date().toISOString()
+
         })
-        .eq("coche", coche)
+
+        .eq(
+            "coche",
+            coche
+        )
+
         .select()
+
         .single();
+
 
     if (error) {
 
-        console.error(error);
+        console.error(
+            "Error actualizando:",
+            error
+        );
+
 
         mostrarMensaje(
             "No se ha podido actualizar"
         );
 
+
+        /*
+           Si falla, volvemos a cargar
+           la posición real.
+        */
+
+        await cargarCoches();
+
         return;
     }
+
 
     actualizarPopup(
         marcadores[coche],
         data
     );
+
 
     mostrarMensaje(
         `${coche} actualizado`
@@ -377,70 +655,292 @@ async function actualizarPosicion(coche, lat, lng) {
 }
 
 
-/* ============================================================
-   ACTUALIZACIÓN EN TIEMPO REAL
-   ============================================================ */
+/* =========================================================
+   REALTIME SUPABASE
+   ========================================================= */
 
-function escucharCambios() {
+function activarRealtime() {
 
     supabaseClient
-        .channel("ubicaciones-coches")
+
+        .channel(
+            "ubicaciones-coches"
+        )
+
         .on(
+
             "postgres_changes",
+
             {
+
                 event: "*",
+
                 schema: "public",
-                table: "ubicaciones_coches"
+
+                table:
+                    "ubicaciones_coches"
+
             },
+
             payload => {
 
-                if (payload.eventType === "DELETE") {
+
+                /*
+                   BORRADO
+                */
+
+                if (
+                    payload.eventType ===
+                    "DELETE"
+                ) {
 
                     const coche =
                         payload.old.coche;
 
-                    if (marcadores[coche]) {
+
+                    if (
+                        marcadores[coche]
+                    ) {
 
                         mapa.removeLayer(
                             marcadores[coche]
                         );
 
-                        delete marcadores[coche];
+
+                        delete marcadores[
+                            coche
+                        ];
+
                     }
+
 
                     return;
                 }
+
+
+                /*
+                   INSERT / UPDATE
+                */
 
                 if (payload.new) {
 
                     colocarMarcador(
                         payload.new
                     );
+
                 }
+
             }
+
         )
+
         .subscribe();
+
 }
 
 
-/* ============================================================
-   MENSAJES
-   ============================================================ */
+/* =========================================================
+   ENCUADRAR COCHES
+   ========================================================= */
 
-function mostrarMensaje(texto) {
+function ajustarMapaACoches() {
+
+    const posiciones =
+        Object.values(
+            marcadores
+        );
+
+
+    if (
+        posiciones.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    if (
+        posiciones.length === 1
+    ) {
+
+        mapa.setView(
+            posiciones[0].getLatLng(),
+            16
+        );
+
+        return;
+    }
+
+
+    const bounds =
+        L.latLngBounds([]);
+
+
+    posiciones.forEach(
+        marcador => {
+
+            bounds.extend(
+                marcador.getLatLng()
+            );
+
+        }
+    );
+
+
+    mapa.fitBounds(
+        bounds,
+        {
+
+            padding: [
+                60,
+                60
+            ],
+
+            maxZoom: 16
+
+        }
+    );
+}
+
+
+/* =========================================================
+   BOTÓN MI UBICACIÓN
+   ========================================================= */
+
+function configurarBotonUbicacion() {
+
+    const boton =
+        document.getElementById(
+            "miUbicacion"
+        );
+
+
+    boton.addEventListener(
+        "click",
+        () => {
+
+            localizarUsuario(true);
+
+        }
+    );
+}
+
+
+/* =========================================================
+   GEOLOCALIZACIÓN
+   ========================================================= */
+
+function localizarUsuario(
+    mostrarError
+) {
+
+    if (
+        !navigator.geolocation
+    ) {
+
+        if (mostrarError) {
+
+            mostrarMensaje(
+                "Tu dispositivo no permite localizarte"
+            );
+
+        }
+
+        return;
+    }
+
+
+    navigator.geolocation.getCurrentPosition(
+
+        posicion => {
+
+            const lat =
+                posicion.coords.latitude;
+
+            const lng =
+                posicion.coords.longitude;
+
+
+            mapa.setView(
+
+                [
+                    lat,
+                    lng
+                ],
+
+                17
+
+            );
+
+        },
+
+        () => {
+
+            if (mostrarError) {
+
+                mostrarMensaje(
+                    "No se ha podido obtener tu ubicación"
+                );
+
+            }
+
+        },
+
+        {
+
+            enableHighAccuracy: true,
+
+            timeout: 10000,
+
+            maximumAge: 60000
+
+        }
+
+    );
+}
+
+
+/* =========================================================
+   MENSAJES
+   ========================================================= */
+
+function mostrarMensaje(
+    texto
+) {
 
     const elemento =
-        document.getElementById("mensaje");
+        document.getElementById(
+            "mensaje"
+        );
 
-    elemento.textContent = texto;
 
-    elemento.classList.add("visible");
+    elemento.textContent =
+        texto;
 
-    clearTimeout(mensajeTimeout);
 
-    mensajeTimeout = setTimeout(() => {
+    elemento.classList.add(
+        "visible"
+    );
 
-        elemento.classList.remove("visible");
 
-    }, 2500);
+    clearTimeout(
+        mensajeTimeout
+    );
+
+
+    mensajeTimeout =
+        setTimeout(
+
+            () => {
+
+                elemento.classList.remove(
+                    "visible"
+                );
+
+            },
+
+            2500
+
+        );
 }

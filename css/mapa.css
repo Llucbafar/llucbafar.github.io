@@ -1,236 +1,828 @@
+/* =========================================================
+   MAPA DE COCHES
+   ========================================================= */
+
+:root {
+
+    --wall-a: #F2ECFB;
+    --wall-b: #E9F2FB;
+
+    --paper: #FFFDFA;
+
+    --ink: #3A3550;
+    --ink-soft: #837D9C;
+
+    --border: rgba(58, 53, 80, 0.10);
+
+    --shadow:
+        0 12px 30px rgba(90, 75, 130, 0.12);
+
+    --radius-s: 10px;
+    --radius-m: 16px;
+    --radius-l: 24px;
+
+
+    /* COCHES */
+
+    --c3-bg: #DCEAFF;
+    --c3-border: #B9D3F7;
+    --c3-text: #416A9C;
+
+    --c4-bg: #E8E8EA;
+    --c4-border: #D0D0D3;
+    --c4-text: #62636A;
+
+    --laguna-bg: #DCEEE5;
+    --laguna-border: #B9D8C9;
+    --laguna-text: #3D735B;
+}
+
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
 * {
     box-sizing: border-box;
 }
+
 
 html,
 body {
     margin: 0;
     padding: 0;
     width: 100%;
-    height: 100%;
-    overflow: hidden;
-    font-family: Arial, sans-serif;
+    min-height: 100%;
 }
+
 
 body {
-    background: #f4f4f4;
+    background:
+        linear-gradient(
+            160deg,
+            var(--wall-a) 0%,
+            var(--wall-b) 100%
+        );
+
+    color: var(--ink);
+
+    font-family:
+        "IBM Plex Sans",
+        sans-serif;
 }
 
+
+button,
+a {
+    font-family: inherit;
+}
+
+
+button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+:focus-visible {
+    outline: 3px solid var(--ink);
+    outline-offset: 3px;
+}
+
+
+/* =========================================================
+   APP
+   ========================================================= */
+
 .mapa-app {
+
     width: 100%;
-    height: 100dvh;
+    min-height: 100dvh;
+
     display: flex;
     flex-direction: column;
 }
 
-.mapa-header {
-    min-height: 70px;
-    padding: 12px 14px;
-    background: white;
+
+/* =========================================================
+   CABECERA
+   ========================================================= */
+
+.topbar {
+
+    width: 100%;
+
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     justify-content: space-between;
-    gap: 10px;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.15);
-    z-index: 1000;
+
+    gap: 20px;
+
+    padding:
+        24px
+        clamp(16px, 5vw, 48px)
+        14px;
+
+    background: rgba(255, 253, 250, 0.82);
+
+    border-bottom:
+        1px solid rgba(58, 53, 80, 0.06);
+
+    backdrop-filter: blur(12px);
+
+    position: relative;
+    z-index: 20;
 }
 
-.mapa-header h1 {
-    margin: 0;
-    font-size: 21px;
+
+.titulo-bloque {
+    min-width: 0;
 }
 
-.mapa-header p {
-    margin: 4px 0 0;
-    font-size: 12px;
-    color: #777;
-}
 
-.btn-volver {
-    text-decoration: none;
-    color: white;
-    background: #333;
-    padding: 9px 12px;
-    border-radius: 9px;
-    font-size: 13px;
-    white-space: nowrap;
-}
+.eyebrow {
 
-.controles {
-    background: white;
-    padding: 10px 12px;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
-    z-index: 900;
-}
+    display: inline-block;
 
-.selector-titulo {
-    font-size: 12px;
-    font-weight: bold;
-    color: #777;
+    padding: 4px 10px;
+
     margin-bottom: 7px;
-    text-transform: uppercase;
+
+    border-radius: 999px;
+
+    background: #DFF3EC;
+
+    color: #2E7A63;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: .04em;
 }
+
+
+.topbar h1 {
+
+    margin: 0;
+
+    font-family: "Sora", sans-serif;
+
+    font-size: clamp(24px, 5vw, 34px);
+
+    line-height: 1.1;
+
+    letter-spacing: -0.02em;
+}
+
+
+.topbar p {
+
+    margin: 6px 0 0;
+
+    color: var(--ink-soft);
+
+    font-size: 13px;
+
+    line-height: 1.45;
+}
+
+
+.volver-btn {
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 9px 14px;
+
+    border-radius: 11px;
+
+    background: var(--ink);
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        transform .18s ease,
+        opacity .18s ease;
+}
+
+
+.volver-btn:hover {
+
+    transform: translateY(-1px);
+    opacity: .9;
+}
+
+
+/* =========================================================
+   TARJETA DE CONTROLES
+   ========================================================= */
+
+.control-card {
+
+    width: min(
+        calc(100% - 24px),
+        900px
+    );
+
+    margin: 12px auto;
+
+    padding: 16px;
+
+    background: rgba(255, 253, 250, 0.94);
+
+    border:
+        1px solid var(--border);
+
+    border-radius: var(--radius-m);
+
+    box-shadow: var(--shadow);
+
+    position: relative;
+    z-index: 15;
+}
+
+
+.control-head h2 {
+
+    margin: 0;
+
+    font-family: "Sora", sans-serif;
+
+    font-size: 16px;
+}
+
+
+.control-head p {
+
+    margin: 4px 0 13px;
+
+    color: var(--ink-soft);
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   BOTONES DE COCHES
+   ========================================================= */
 
 .coches-selector {
-    display: flex;
-    gap: 7px;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
 }
+
 
 .coche-btn {
-    flex: 1;
-    border: 2px solid #ddd;
-    background: white;
-    border-radius: 10px;
-    padding: 10px 5px;
-    font-size: 14px;
-    font-weight: bold;
+
+    min-height: 66px;
+
+    padding: 9px 7px;
+
+    border-radius: 13px;
+
+    border: 2px solid transparent;
+
     cursor: pointer;
+
     display: flex;
-    justify-content: center;
+
+    flex-direction: column;
+
     align-items: center;
-    gap: 7px;
+
+    justify-content: center;
+
+    gap: 2px;
+
+    transition:
+        transform .16s ease,
+        box-shadow .16s ease,
+        border-color .16s ease;
 }
+
+
+.coche-btn:hover {
+
+    transform: translateY(-1px);
+}
+
+
+.coche-btn:active {
+
+    transform: scale(.98);
+}
+
+
+.coche-btn span {
+
+    font-family: "Sora", sans-serif;
+
+    font-size: 15px;
+
+    font-weight: 700;
+}
+
+
+.coche-btn small {
+
+    font-size: 11px;
+
+    opacity: .75;
+}
+
+
+/* C3 */
+
+.coche-btn.c3 {
+
+    background: var(--c3-bg);
+
+    color: var(--c3-text);
+
+    border-color:
+        var(--c3-border);
+}
+
+
+/* C4 */
+
+.coche-btn.c4 {
+
+    background: var(--c4-bg);
+
+    color: var(--c4-text);
+
+    border-color:
+        var(--c4-border);
+}
+
+
+/* Laguna */
+
+.coche-btn.laguna {
+
+    background: var(--laguna-bg);
+
+    color: var(--laguna-text);
+
+    border-color:
+        var(--laguna-border);
+}
+
+
+/* SELECCIONADO */
 
 .coche-btn.activo {
-    border-color: #222;
-    background: #f1f1f1;
+
+    box-shadow:
+        0 0 0 2px
+        rgba(58, 53, 80, 0.22),
+        0 6px 14px
+        rgba(58, 53, 80, 0.10);
+
+    transform: translateY(-1px);
 }
 
-.coche-punto {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    display: inline-block;
-    border: 2px solid white;
-    box-shadow: 0 0 0 1px #777;
-}
 
-.coche-punto.c3 {
-    background: #1677ff;
-}
-
-.coche-punto.c4 {
-    background: #777;
-}
-
-.coche-punto.laguna {
-    background: #176b3a;
-}
+/* =========================================================
+   ESTADO
+   ========================================================= */
 
 .estado {
-    margin-top: 8px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    margin-top: 11px;
+
+    color: var(--ink-soft);
+
     font-size: 12px;
-    color: #666;
 }
+
+
+.estado-punto {
+
+    width: 8px;
+    height: 8px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #8FCDBB;
+
+    box-shadow:
+        0 0 0 4px #E4F4EE;
+}
+
+
+/* =========================================================
+   MAPA
+   ========================================================= */
+
+.mapa-contenedor {
+
+    position: relative;
+
+    flex: 1;
+
+    min-height: 420px;
+
+    width: 100%;
+
+    overflow: hidden;
+}
+
 
 #map {
-    flex: 1;
+
+    position: absolute;
+
+    inset: 0;
+
     width: 100%;
-    min-height: 0;
-    z-index: 1;
+    height: 100%;
 }
 
-.mensaje {
-    position: fixed;
-    left: 50%;
-    bottom: 20px;
-    transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.82);
-    color: white;
-    padding: 10px 15px;
-    border-radius: 10px;
-    font-size: 13px;
-    opacity: 0;
-    pointer-events: none;
-    transition: opacity 0.2s;
-    z-index: 2000;
-    white-space: nowrap;
+
+/*
+   MUY IMPORTANTE:
+
+   No permitir que el CSS de la página
+   deforme las imágenes de Leaflet.
+*/
+
+.leaflet-container img {
+
+    max-width: none !important;
+    max-height: none !important;
 }
 
-.mensaje.visible {
-    opacity: 1;
+
+.leaflet-tile {
+
+    width: 256px !important;
+    height: 256px !important;
 }
 
-.pin-coche {
-    width: 32px;
-    height: 42px;
-    position: relative;
-}
 
-.pin-coche::before {
-    content: "";
+/* =========================================================
+   BOTÓN MI UBICACIÓN
+   ========================================================= */
+
+.ubicacion-btn {
+
     position: absolute;
-    width: 28px;
-    height: 28px;
-    left: 2px;
-    top: 0;
+
+    right: 15px;
+    bottom: 18px;
+
+    width: 46px;
+    height: 46px;
+
+    border: none;
+
+    border-radius: 14px;
+
+    background: var(--paper);
+
+    color: var(--ink);
+
+    box-shadow:
+        0 6px 20px
+        rgba(50, 45, 70, 0.20);
+
+    cursor: pointer;
+
+    z-index: 500;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    transition:
+        transform .18s ease;
+}
+
+
+.ubicacion-btn:hover {
+
+    transform: translateY(-2px);
+}
+
+
+.ubicacion-btn:active {
+
+    transform: scale(.94);
+}
+
+
+/* =========================================================
+   MARCADORES DE LOS COCHES
+   ========================================================= */
+
+.coche-marker {
+
+    width: 46px;
+    height: 46px;
+
     border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
+
+    transform:
+        rotate(-45deg);
+
     border: 3px solid white;
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.45);
+
+    box-shadow:
+        0 3px 10px
+        rgba(40, 35, 55, .30);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
 }
 
-.pin-coche::after {
-    content: "";
-    position: absolute;
-    width: 10px;
-    height: 10px;
-    left: 11px;
-    top: 9px;
-    border-radius: 50%;
-    background: white;
-    z-index: 2;
+
+.coche-marker-inner {
+
+    transform: rotate(45deg);
+
+    font-family: "Sora", sans-serif;
+
+    font-size: 11px;
+
+    font-weight: 700;
+
+    color: white;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.25);
 }
 
-.pin-c3::before {
-    background: #1677ff;
+
+/* colores */
+
+.marker-c3 {
+
+    background: #78A9E8;
 }
 
-.pin-c4::before {
-    background: #777;
+
+.marker-c4 {
+
+    background: #999BA3;
 }
 
-.pin-laguna::before {
-    background: #176b3a;
+
+.marker-laguna {
+
+    background: #579477;
 }
+
+
+/* =========================================================
+   POPUP
+   ========================================================= */
+
+.leaflet-popup-content-wrapper {
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 30px
+        rgba(50, 45, 70, .16);
+}
+
 
 .leaflet-popup-content {
-    margin: 12px;
+
+    margin: 13px 15px;
+
+    font-family:
+        "IBM Plex Sans",
+        sans-serif;
 }
 
-.popup-coche {
+
+.popup {
+
+    min-width: 150px;
+
+    color: var(--ink);
+
     text-align: center;
 }
 
-.popup-coche strong {
-    font-size: 17px;
+
+.popup-nombre {
+
+    font-family: "Sora", sans-serif;
+
+    font-size: 16px;
+
+    font-weight: 700;
 }
 
-.popup-fecha {
+
+.popup-info {
+
     margin-top: 5px;
-    color: #777;
+
+    color: var(--ink-soft);
+
+    font-size: 11px;
+
+    line-height: 1.4;
+}
+
+
+.popup-ayuda {
+
+    margin-top: 9px;
+
+    padding-top: 8px;
+
+    border-top:
+        1px solid rgba(58,53,80,.08);
+
+    color: var(--ink-soft);
+
     font-size: 11px;
 }
 
-.popup-mover {
-    margin-top: 9px;
+
+/* =========================================================
+   MENSAJES
+   ========================================================= */
+
+.mensaje {
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: 20px;
+
+    transform:
+        translate(-50%, 15px);
+
+    padding: 10px 15px;
+
+    background:
+        rgba(58, 53, 80, .92);
+
+    color: white;
+
+    border-radius: 11px;
+
     font-size: 12px;
-    color: #555;
+
+    white-space: nowrap;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    z-index: 1000;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
 }
 
-@media (min-width: 700px) {
 
-    .mapa-header {
-        padding-left: 20px;
-        padding-right: 20px;
+.mensaje.visible {
+
+    opacity: 1;
+
+    transform:
+        translate(-50%, 0);
+}
+
+
+/* =========================================================
+   MÓVIL
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    .topbar {
+
+        padding:
+            18px
+            13px
+            11px;
     }
 
-    .controles {
-        padding-left: 20px;
-        padding-right: 20px;
+
+    .topbar h1 {
+
+        font-size: 23px;
     }
+
+
+    .topbar p {
+
+        max-width: 240px;
+
+        font-size: 12px;
+    }
+
+
+    .volver-btn {
+
+        padding: 8px 11px;
+
+        font-size: 12px;
+    }
+
+
+    .control-card {
+
+        width:
+            calc(100% - 16px);
+
+        margin:
+            8px auto;
+
+        padding: 13px;
+    }
+
+
+    .control-head h2 {
+
+        font-size: 14px;
+    }
+
 
     .coches-selector {
-        max-width: 500px;
+
+        gap: 6px;
+    }
+
+
+    .coche-btn {
+
+        min-height: 60px;
+    }
+
+
+    .coche-btn span {
+
+        font-size: 14px;
+    }
+
+
+    .mapa-contenedor {
+
+        min-height: 0;
+    }
+}
+
+
+/* =========================================================
+   ESCRITORIO
+   ========================================================= */
+
+@media (min-width: 800px) {
+
+    .mapa-contenedor {
+
+        margin:
+            0 auto 20px;
+
+        width:
+            min(1200px, 100% - 32px);
+
+        min-height:
+            600px;
+
+        border-radius:
+            var(--radius-l);
+
+        overflow:
+            hidden;
+
+        box-shadow:
+            var(--shadow);
     }
 }

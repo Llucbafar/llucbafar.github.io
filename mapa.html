@@ -2,82 +2,152 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
 
     <title>Mapa de coches</title>
 
-    <link rel="stylesheet" href="css/mapa.css">
+    <!-- Tipografías -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@400;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+        rel="stylesheet"
+    >
 
     <!-- Leaflet -->
     <link
         rel="stylesheet"
         href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-        integrity="sha256-p4NxAoJBhIINfQ3gV2Z9Y4l8QY0Q8QkY8J8Q8Q8Q8Q8="
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
         crossorigin=""
-    />
+    >
+
+    <!-- Estilos propios -->
+    <link rel="stylesheet" href="css/mapa.css">
 </head>
 
 <body>
 
-    <div class="mapa-app">
+<div class="mapa-app">
 
-        <header class="mapa-header">
+    <!-- CABECERA -->
+    <header class="topbar">
+
+        <div class="titulo-bloque">
+            <div class="eyebrow">¿DÓNDE ESTARÁ MI COCHE?</div>
+
+            <h1>Mapa de coches</h1>
+        </div>
+
+        <a href="vehiculos.html" class="volver-btn">
+            ¡Reserva tu cochecito!
+        </a>
+
+    </header>
+
+
+    <!-- PANEL DE CONTROL -->
+    <section class="control-card">
+
+        <div class="control-head">
             <div>
-                <h1>Mapa de coches</h1>
-                <p>Toca el mapa para colocar un coche</p>
+                <h2>¿Qué coche quieres colocar?</h2>
+                <p>
+                    Selecciona un coche y después toca el mapa.
+                </p>
             </div>
+        </div>
 
-            <a href="vehiculos.html" class="btn-volver">Vehículos</a>
-        </header>
 
-        <section class="controles">
+        <!-- BOTONES DE COCHES -->
+        <div class="coches-selector">
+            <button
+                type="button"
+                class="coche-btn c3"
+                data-coche="C3"
+            >
+                <span>C3</span>
+                <small>Azul</small>
+            </button>
 
-            <div class="selector-titulo">
-                Selecciona el coche
-            </div>
 
-            <div class="coches-selector">
+            <button
+                type="button"
+                class="coche-btn c4"
+                data-coche="C4"
+            >
+                <span>C4</span>
+                <small>Gris</small>
+            </button>
 
-                <button class="coche-btn activo" data-coche="C3">
-                    <span class="coche-punto c3"></span>
-                    C3
-                </button>
 
-                <button class="coche-btn" data-coche="C4">
-                    <span class="coche-punto c4"></span>
-                    C4
-                </button>
+            <button
+                type="button"
+                class="coche-btn laguna"
+                data-coche="Laguna"
+            >
+                <span>Laguna</span>
+                <small>Verde</small>
+            </button>
 
-                <button class="coche-btn" data-coche="Laguna">
-                    <span class="coche-punto laguna"></span>
-                    Laguna
-                </button>
+        </div>
 
-            </div>
 
-            <div id="estado" class="estado">
-                Coche seleccionado: <strong>C3</strong>
-            </div>
+        <!-- ESTADO -->
+        <div class="estado">
 
-        </section>
+            <span class="estado-punto"></span>
 
-        <main id="map"></main>
+            <span id="estadoTexto">
+                C3 seleccionado · toca el mapa para colocarlo
+            </span>
 
+        </div>
+
+    </section>
+
+
+    <!-- MAPA -->
+    <main class="mapa-contenedor">
+
+        <div id="map"></div>
+
+        <!-- BOTÓN UBICACIÓN -->
+        <button
+            id="miUbicacion"
+            class="ubicacion-btn"
+            type="button"
+            aria-label="Ir a mi ubicación"
+        >
+            <span>⌖</span>
+        </button>
+
+        <!-- MENSAJE -->
         <div id="mensaje" class="mensaje"></div>
 
-    </div>
+    </main>
 
-    <!-- Leaflet -->
-    <script
-        src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin="">
-    </script>
 
-    <!-- Supabase -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</div>
 
-    <script src="js/mapa.js"></script>
+
+<!-- Leaflet -->
+<script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+    crossorigin=""
+></script>
+
+
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+
+<!-- JS -->
+<script src="js/mapa.js"></script>
 
 </body>
 </html>

@@ -9,6 +9,9 @@
   --text-muted: #64748b;
   --border-color: #e2e8f0;
 
+  --ink: #3A3550;
+  --ink-soft: #837D9C;
+
   /* Colores por vehículo */
   --c3-color: #25d4eb;       /* Azulito */
   --c4-color: #323f4a;       /* Gris */
@@ -43,11 +46,82 @@ body {
 /* ==========================================
    2. CABECERA
    ========================================== */
-.app-header {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  padding: 0.5rem 0;
+.topbar {
+
+    width: 100%;
+
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    gap: 20px;
+
+    padding:
+        24px
+        clamp(16px, 5vw, 48px)
+        14px;
+
+    background: rgba(255, 253, 250, 0.82);
+
+    border-bottom:
+        1px solid rgba(58, 53, 80, 0.06);
+
+    backdrop-filter: blur(12px);
+
+    position: relative;
+    z-index: 20;
+}
+
+
+.titulo-bloque {
+    min-width: 0;
+}
+
+
+.eyebrow {
+
+    display: inline-block;
+
+    padding: 4px 10px;
+
+    margin-bottom: 7px;
+
+    border-radius: 999px;
+
+    background: #DFF3EC;
+
+    color: #2E7A63;
+
+    font-size: 11px;
+    font-weight: 600;
+
+    letter-spacing: .04em;
+}
+
+
+.topbar h1 {
+
+    margin: 0;
+    
+    font-family: "Sora", sans-serif;
+
+    font-size: clamp(24px, 5vw, 34px);
+
+    line-height: 0.9;
+
+    letter-spacing: -0.05em;
+}
+
+
+.topbar p {
+
+    margin: 6px 0 0;
+
+    color: var(--ink-soft);
+
+    font-size: 13px;
+
+    line-height: 1.45;
 }
 
 .back-button {
@@ -62,6 +136,39 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.volver-btn {
+
+    flex-shrink: 0;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 5px 14px;
+
+    border-radius: 11px;
+
+    background: var(--ink);
+
+    color: white;
+
+    text-decoration: none;
+
+    font-size: 13px;
+    font-weight: 600;
+
+    transition:
+        transform .18s ease,
+        opacity .18s ease;
+}
+
+
+.volver-btn:hover {
+
+    transform: translateY(-1px);
+    opacity: .9;
 }
 
 .app-header h1 {
