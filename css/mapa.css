@@ -284,6 +284,26 @@ button {
 }
 
 
+.editar-btn {
+
+    display: flex;
+
+    margin-left: auto;
+
+    padding: 8px 100px;
+
+    margin-bottom: 7px;
+
+    border-radius: 999px;
+
+    background: #DFF3EC;
+
+    color: #f0c33b;
+    
+    align-items: center
+
+}
+
 .coche-btn {
 
     min-height: 66px;
