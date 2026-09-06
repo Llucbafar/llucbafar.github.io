@@ -273,13 +273,26 @@ function actualizarPopup(marcador, ubicacion) {
         })
         : 'Sin información';
 
-    marcador.bindPopup(`
-        <div class="popup">
-            <div class="popup-nombre">${coche.nombre}</div>
-            <div class="popup-info">${coche.color}<br>Actualizado: ${fecha}</div>
-            <div class="popup-ayuda">${editando && cocheSeleccionado === coche.nombre ? 'Arrástralo para cambiar su ubicación.' : 'Activa Editar y selecciona este coche para moverlo.'}</div>
-        </div>
-    `);
+        marcador.bindPopup(`
+            <div class="popup">
+                <div class="popup-ubicacion">
+                    <a href="https://www.google.com/maps/search/?api=1&query=${ubicacion.lat},${ubicacion.lng}" target="_blank" rel="noopener noreferrer">
+                        ¿Cómo llegar al ${coche.nombre}?
+                    </a>
+                </div>
+                    
+                <div class="popup-info">
+                    <br>
+                    Actualizado: ${fecha}
+                </div>
+
+                <div class="popup-ayuda">
+                    ${editando && cocheSeleccionado === coche.nombre
+                        ? 'Arrástralo para cambiar su ubicación.'
+                        : 'Activa Editar y selecciona este coche para moverlo.'}
+                </div>
+            </div>
+        `);
 }
 
 /* =========================================================
