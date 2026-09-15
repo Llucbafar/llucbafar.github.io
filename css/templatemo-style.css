@@ -405,3 +405,111 @@ p {
     padding: 25px;
   }
 }
+
+
+
+
+
+
+/* ==========================================
+   ADAPTACIÓN RESPONSIVA / MÓVIL
+   ========================================== */
+
+/* Tablet y dispositivos medianos (<= 991px) */
+@media (max-width: 991px) {
+  .tm-brand-container-outer {
+    margin-top: -400px;
+    width: 95%;
+  }
+
+  .tm-brand-container-inner {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .tm-welcome-container {
+    margin-right: auto;
+    padding: 0 15px;
+  }
+
+  /* Tarjetas de contacto en vertical */
+  .tm-contact-items-container {
+    flex-direction: column;
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    align-items: center;
+  }
+
+  .tm-contact-item {
+    width: 100%;
+    max-width: 100%;
+    margin-right: 0;
+    margin-bottom: 30px;
+    min-height: auto;
+  }
+}
+
+/* Teléfonos móviles (<= 768px) */
+@media (max-width: 768px) {
+  body {
+    font-size: 16px;
+  }
+
+  /* Ajustes de marca / cabecera */
+  .tm-brand-container-outer {
+    margin-top: 0;
+    width: 100%;
+  }
+
+  .tm-brand-container {
+    padding: 30px 20px;
+    text-align: center;
+  }
+
+  .tm-brand-name {
+    font-size: 2.2rem;
+  }
+
+  .tm-brand-description {
+    font-size: 1.1rem;
+  }
+
+  /* Sección de Bienvenida */
+  .tm-welcome-left {
+    padding: 30px 15px;
+  }
+
+  .tm-welcome-right {
+    padding: 40px 20px;
+  }
+
+  /* Portafolio en vertical y ajustado */
+  .tm-portfolio-item {
+    flex-direction: column;
+    margin-bottom: 40px;
+  }
+
+  .tm-portfolio-name {
+    width: 100%;
+    height: auto;
+    padding: 30px 15px;
+    justify-content: center;
+  }
+
+  .tm-portfolio-description {
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  /* Formularios */
+  #tmContactForm {
+    padding: 25px 15px;
+    margin-bottom: 40px;
+  }
+
+  .form-group {
+    max-width: 100%;
+  }
+}
+
