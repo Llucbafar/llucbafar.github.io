@@ -182,7 +182,7 @@ a:hover {
 */
 
 #tmPortfolio {
-  padding-top: 80px;
+  padding-top: 90px;
 }
 
 .tm-portfolio-item {
@@ -222,6 +222,14 @@ a:hover {
   color: #3398cc;
 }
 
+.tm-text-light-blue {
+  color: #89d7fe;
+}
+
+.tm-text-dark-blue {
+  color: #0a5c85;
+}
+
 .tm-text-dark-gray {
   color: #676767;
 }
@@ -231,7 +239,15 @@ a:hover {
 }
 
 .tm-text-dark-yellow {
-  color: #cccf02;
+  color: #a5a709;
+}
+
+.tm-text-yellow {
+  color: #e0e415;
+}
+
+.tm-text-light-yellow {
+  color: #f1f449;
 }
 
 .tm-text-oliva{
@@ -338,6 +354,22 @@ p {
 
 .tm-link {
   color: #676767;
+}
+
+.tm-link-blue{
+  color: #23b8cc;
+}
+
+.tm-link-green{
+  color: #606c38;
+}
+
+.tm-link-orange {
+  color: #cc6733;
+}
+
+.tm-link-yellow {
+  color: #f6e870;
 }
 
 @media (max-width: 200px) {
